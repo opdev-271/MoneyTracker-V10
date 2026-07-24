@@ -1,0 +1,114 @@
+package com.moneytracker.app.ui.home;
+
+import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.moneytracker.app.R;
+import com.moneytracker.app.data.entity.Category;
+import com.moneytracker.app.data.relation.TransactionWithDetails;
+import com.moneytracker.app.util.CategoryIcons;
+import com.moneytracker.app.util.CurrencyFormatter;
+import com.moneytracker.app.util.DisplayNameResolver;
+import com.moneytracker.app.util.TransactionColors;
+import com.moneytracker.app.util.ViewAnimations;
+
+import java.text.SimpleDateFormat;
+import java.util.Locale;
+
+public class TransactionAdapter extends ListAdapter<TransactionWithDetails, TransactionAdapter.ViewHolder> {
+
+    private final int[] highestAnimatedPosition = {-1};
+
+    public TransactionAdapter() {
+        super(DIFF_CALLBACK);
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_transaction, parent, false);
+        return new ViewHolder(view);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        holder.bind(getItem(position));
+        ViewAnimations.animateItemEntranceOnce(holder.itemView, position, highestAnimatedPosition);
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        private final FrameLayout badgeIcon;
+        private final ImageView imageDirection;
+        private final TextView textTitle;
+        private final TextView textSubtitle;
+        private final TextView textAmount;
+
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            badgeIcon = itemView.findViewById(R.id.badge_icon);
+            imageDirection = itemView.findViewById(R.id.image_direction);
+            textTitle = itemView.findViewById(R.id.text_title);
+            textSubtitle = itemView.findViewById(R.id.text_subtitle);
+            textAmount = itemView.findViewById(R.id.text_amount);
+        }
+
+        void bind(TransactionWithDetails item) {
+            Context context = itemView.getContext();
+            boolean isExpense = Category.TYPE_EXPENSE.equals(item.type);
+
+            if (item.categoryIcon != null) {
+                imageDirection.setImageResource(CategoryIcons.resolve(item.categoryIcon));
+                GradientDrawable badge = (GradientDrawable) badgeIcon.getBackground().mutate();
+                badge.setColor(item.categoryColor != 0 ? item.categoryColor
+                        : context.getColor(R.color.text_tertiary));
+            } else {
+                imageDirection.setImageResource(isExpense ? R.drawable.ic_arrow_up : R.drawable.ic_arrow_down);
+                GradientDrawable badge = (GradientDrawable) badgeIcon.getBackground().mutate();
+                badge.setColor(context.getColor(R.color.surface_variant));
+            }
+
+            String title = !TextUtils.isEmpty(item.counterparty)
+                    ? item.counterparty
+                    : DisplayNameResolver.resolve(context, item.categoryName);
+            textTitle.setText(title);
+
+            String relation = context.getString(isExpense ? R.string.sent_by_you : R.string.received_by_you);
+            String date = new SimpleDateFormat("MMM d", Locale.getDefault()).format(item.date);
+            textSubtitle.setText(context.getString(R.string.subtitle_format, relation, date));
+
+            double signed = isExpense ? -item.amount : item.amount;
+            textAmount.setText(CurrencyFormatter.formatSigned(signed, item.accountCurrency));
+            textAmount.setTextColor(TransactionColors.amountColor(context, item.type));
+        }
+    }
+
+    private static final DiffUtil.ItemCallback<TransactionWithDetails> DIFF_CALLBACK =
+            new DiffUtil.ItemCallback<TransactionWithDetails>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull TransactionWithDetails oldItem, @NonNull TransactionWithDetails newItem) {
+                    return oldItem.id == newItem.id;
+                }
+
+                @Override
+                public boolean areContentsTheSame(@NonNull TransactionWithDetails oldItem, @NonNull TransactionWithDetails newItem) {
+                    return oldItem.amount == newItem.amount
+                            && oldItem.type.equals(newItem.type)
+                            && TextUtils.equals(oldItem.counterparty, newItem.counterparty)
+                            && TextUtils.equals(oldItem.categoryName, newItem.categoryName)
+                            && oldItem.date.equals(newItem.date);
+                }
+            };
+}

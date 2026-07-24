@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Money Tracker</string>
+
+    <!-- Home -->
+    <string name="home_welcome_back">MoneyTracker</string>
+    <string name="account_balance">Zůstatek účtu</string>
+    <string name="balance_label_single">Zůstatek na účtu:</string>
+    <string name="balance_label_multiple">Zůstatek na účtech:</string>
+    <string name="balance_label_all">Zůstatek na všech účtech</string>
+    <string name="transactions_title">Nedávné transakce</string>
+    <string name="see_all">Další</string>
+    <string name="all_transactions_title">Všechny transakce</string>
+    <string name="sent_by_you">Odesláno vámi</string>
+    <string name="received_by_you">Přijato vámi</string>
+    <string name="empty_transactions">Zatím žádné transakce</string>
+    <string name="subtitle_format">%1$s • %2$s</string>
+
+    <!-- Profily -->
+    <string name="profile_switcher_title">Profily</string>
+    <string name="add_profile_action">+ Přidat profil</string>
+    <string name="add_profile_title">Přidat profil</string>
+    <string name="profile_name_hint">Jméno</string>
+
+    <!-- Výběr účtů pro zůstatek -->
+    <string name="balance_accounts_picker_title">Zůstatek z účtů</string>
+    <string name="action_select_all">Vybrat vše</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Domů</string>
+    <string name="nav_wallet">Účty</string>
+    <string name="nav_analytics">Analýza</string>
+    <string name="nav_settings">Nastavení</string>
+
+    <!-- Add transaction -->
+    <string name="add_transaction_title">Přidat transakci</string>
+    <string name="label_expense">Výdaj</string>
+    <string name="label_income">Příjem</string>
+    <string name="label_amount">Částka</string>
+    <string name="label_account">Účet</string>
+    <string name="label_category">Kategorie</string>
+    <string name="label_icon">Ikona</string>
+    <string name="label_color">Barva</string>
+    <string name="label_description">Popis</string>
+    <string name="label_date">Datum</string>
+    <string name="button_save">Uložit</string>
+    <string name="hint_amount">0.00</string>
+    <string name="hint_description">např. Nákup potravin</string>
+    <string name="error_amount_required">Zadejte částku</string>
+    <string name="error_account_required">Vyberte účet</string>
+    <string name="error_category_required">Vyberte kategorii</string>
+    <string name="add_category_action">+ Přidat kategorii</string>
+    <string name="add_category_title">Přidat kategorii</string>
+    <string name="category_name_hint">Název kategorie</string>
+
+    <!-- Accounts -->
+    <string name="wallet_title">Účty</string>
+    <string name="wallet_add_account">Přidat účet</string>
+    <string name="account_name_hint">Název účtu</string>
+    <string name="account_currency_hint">Měna</string>
+    <string name="account_initial_balance_hint">Počáteční zůstatek</string>
+    <string name="account_number_hint">Číslo účtu (volitelné)</string>
+    <string name="account_type_label">Typ účtu</string>
+    <string name="account_type_cash">Hotovost</string>
+    <string name="account_type_bank">Bankovní účet</string>
+    <string name="account_type_savings">Spoření</string>
+    <string name="dialog_add_account_title">Přidat účet</string>
+    <string name="dialog_edit_account_title">Upravit účet</string>
+    <string name="action_delete">Smazat</string>
+    <string name="action_cancel">Zrušit</string>
+    <string name="empty_accounts">Zatím žádné účty</string>
+
+    <!-- Analytics -->
+    <string name="analytics_title">Analýza</string>
+    <string name="analytics_income">Příjmy</string>
+    <string name="analytics_expense">Výdaje</string>
+    <string name="analytics_by_category">Výdaje podle kategorií</string>
+    <string name="analytics_period_day">Den</string>
+    <string name="analytics_period_week">Týden</string>
+    <string name="analytics_period_month">Měsíc</string>
+    <string name="analytics_period_year">Rok</string>
+    <string name="analytics_no_data">V tomto období zatím nejsou žádné výdaje</string>
+    <string name="analytics_filter_all">Vše</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Nastavení</string>
+    <string name="settings_language">Jazyk</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_language_czech">Čeština</string>
+    <string name="settings_language_german">Deutsch</string>
+    <string name="settings_appearance">Vzhled</string>
+    <string name="theme_light">Světlý</string>
+    <string name="theme_dark">Tmavý</string>
+    <string name="theme_system">Podle systému</string>
+    <string name="settings_hide_balance">Skrýt zůstatky na hlavní obrazovce</string>
+    <string name="settings_color_code_transactions">Barevně rozlišovat příjmy a výdaje</string>
+    <string name="settings_profile_name">Jméno</string>
+    <string name="settings_about">O aplikaci</string>
+    <string name="settings_about_body">Money Tracker · verze 1.0</string>
+
+    <!-- Onboarding -->
+    <string name="onboarding_title">Vítejte!</string>
+    <string name="onboarding_subtitle">Než začneme, nastavme si pár věcí</string>
+    <string name="onboarding_name_label">Vaše jméno</string>
+    <string name="onboarding_name_hint">např. Jana</string>
+    <string name="onboarding_currency_label">Preferovaná měna</string>
+    <string name="onboarding_avatar_label">Vyberte si avatara</string>
+    <string name="onboarding_get_started">Začít</string>
+
+    <!-- Seeded categories (looked up by key, see DisplayNameResolver) -->
+    <string name="category_food">Jídlo</string>
+    <string name="category_transport">Doprava</string>
+    <string name="category_shopping">Nákupy</string>
+    <string name="category_bills">Účty</string>
+    <string name="category_entertainment">Zábava</string>
+    <string name="category_health">Zdraví</string>
+    <string name="category_other_expense">Ostatní</string>
+    <string name="category_salary">Výplata</string>
+    <string name="category_gift">Dar</string>
+    <string name="category_other_income">Ostatní</string>
+
+    <string name="account_cash_default">Hotovost</string>
+
+    <string-array name="currency_codes">
+        <item>CZK</item>
+        <item>EUR</item>
+        <item>USD</item>
+        <item>GBP</item>
+    </string-array>
+</resources>

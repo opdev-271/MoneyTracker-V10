@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="background">#121214</color>
+    <color name="surface">#1E1E22</color>
+    <color name="surface_variant">#2A2A2E</color>
+    <color name="surface_variant_dark">#34343A</color>
+
+    <color name="text_primary">#F2F2F2</color>
+    <color name="text_secondary">#9A9AA0</color>
+    <color name="text_tertiary">#6E6E74</color>
+
+    <color name="icon_primary">#F2F2F2</color>
+    <color name="on_surface_variant">#F2F2F2</color>
+
+    <color name="income_green">#3DDC84</color>
+    <color name="expense_red">#FF6B6B</color>
+
+    <color name="accent">#F2F2F2</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+    <color name="divider">#2E2E33</color>
+
+    <!-- text_primary flips to near-white in dark mode, so the selected pill
+         (filled with text_primary) needs a dark label to stay readable -->
+    <color name="on_accent_text">#1A1A1A</color>
+</resources>
