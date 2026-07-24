@@ -28,6 +28,11 @@ public class AccountRepository {
         return accountDao.getAccountById(accountId);
     }
 
+    /** Synchronous — call off the main thread (e.g. via AppExecutors.diskIO()). */
+    public List<Account> getAccountsByIdsSync(List<Long> accountIds) {
+        return accountDao.getAccountsByIdsSync(accountIds);
+    }
+
     public LiveData<Double> getBalanceForAccounts(List<Long> accountIds) {
         return accountDao.getBalanceForAccounts(accountIds);
     }

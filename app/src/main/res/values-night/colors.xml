@@ -5,6 +5,9 @@
     <color name="surface_variant">#2A2A2E</color>
     <color name="surface_variant_dark">#34343A</color>
 
+    <color name="surface_glass">#CC1E1E22</color>
+    <color name="glass_edge">#40FFFFFF</color>
+
     <color name="text_primary">#F2F2F2</color>
     <color name="text_secondary">#9A9AA0</color>
     <color name="text_tertiary">#6E6E74</color>

@@ -5,7 +5,11 @@ import android.view.View;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 
-/** Small, reusable motion touches shared across screens so the app feels consistently "alive". */
+/**
+ * Small, reusable motion touches shared across screens so the app feels consistently
+ * "alive" — unless the user turned animations off in Settings (weaker phones), in
+ * which case every method here just snaps straight to the end state instead.
+ */
 public class ViewAnimations {
 
     private ViewAnimations() {
@@ -13,6 +17,9 @@ public class ViewAnimations {
 
     /** Scales a view down on press and springs it back on release, like a physical button. */
     public static void addPressFeedback(View... views) {
+        if (views.length == 0 || !animationsEnabled(views[0])) {
+            return;
+        }
         View.OnTouchListener listener = (v, event) -> {
             switch (event.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
@@ -42,6 +49,11 @@ public class ViewAnimations {
 
     /** Fades + lifts a screen's root content in; call once per fragment view creation. */
     public static void fadeInContent(View root) {
+        if (!animationsEnabled(root)) {
+            root.setAlpha(1f);
+            root.setTranslationY(0f);
+            return;
+        }
         root.setAlpha(0f);
         root.setTranslationY(24f);
         root.animate()
@@ -59,9 +71,10 @@ public class ViewAnimations {
      * during scroll are left untouched so the effect only plays once per item.
      */
     public static void animateItemEntranceOnce(View itemView, int position, int[] highestAnimatedPosition) {
-        if (position <= highestAnimatedPosition[0]) {
+        if (position <= highestAnimatedPosition[0] || !animationsEnabled(itemView)) {
             itemView.setAlpha(1f);
             itemView.setTranslationY(0f);
+            highestAnimatedPosition[0] = Math.max(highestAnimatedPosition[0], position);
             return;
         }
         highestAnimatedPosition[0] = position;
@@ -74,5 +87,9 @@ public class ViewAnimations {
                 .setDuration(260)
                 .setInterpolator(new DecelerateInterpolator())
                 .start();
+    }
+
+    private static boolean animationsEnabled(View view) {
+        return SettingsPrefs.isAnimationsEnabled(view.getContext());
     }
 }

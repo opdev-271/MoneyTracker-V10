@@ -2,6 +2,7 @@ package com.moneytracker.app.ui.home;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.moneytracker.app.R;
 import com.moneytracker.app.data.entity.Account;
+import com.moneytracker.app.ui.widget.ColorSwatchRow;
 import com.moneytracker.app.util.DisplayNameResolver;
 
 import java.util.ArrayList;
@@ -69,10 +71,14 @@ public class BalanceAccountsPickerDialogFragment extends DialogFragment {
             View row = inflater.inflate(R.layout.item_balance_account_row, accountsContainer, false);
             CheckBox checkBox = row.findViewById(R.id.checkbox_account);
             TextView name = row.findViewById(R.id.text_name);
+            View dotColor = row.findViewById(R.id.dot_color);
 
             name.setText(DisplayNameResolver.resolve(requireContext(), account.getName()));
             checkBox.setChecked(selectedIds == null || selectedIds.contains(account.getId()));
             checkBox.setTag(account.getId());
+
+            int color = account.getColor() != 0 ? account.getColor() : ColorSwatchRow.DEFAULT_COLORS[0];
+            ((GradientDrawable) dotColor.getBackground().mutate()).setColor(color);
 
             checkBoxes.add(checkBox);
             accountsContainer.addView(row);

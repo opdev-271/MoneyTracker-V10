@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/background"
-    android:orientation="vertical"
-    android:padding="@dimen/screen_padding">
+    android:clipToPadding="false"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/screen_padding">
 
     <TextView
         android:layout_width="match_parent"
@@ -253,6 +259,31 @@
             android:layout_height="wrap_content" />
     </LinearLayout>
 
+    <!-- Disable animations -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_s"
+        android:background="@drawable/bg_card_white"
+        android:elevation="2dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/settings_disable_animations"
+            android:textColor="@color/text_primary"
+            android:textSize="15sp" />
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_disable_animations"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
     <!-- About -->
     <LinearLayout
         android:layout_width="match_parent"
@@ -280,4 +311,9 @@
             android:textSize="13sp" />
     </LinearLayout>
 
-</LinearLayout>
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/spacing_xl" />
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

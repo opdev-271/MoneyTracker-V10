@@ -11,6 +11,22 @@
     <string name="transactions_title">Letzte Transaktionen</string>
     <string name="see_all">Mehr</string>
     <string name="all_transactions_title">Alle Transaktionen</string>
+
+    <!-- Export -->
+    <string name="export_action">Export</string>
+    <string name="export_columns_title">Nach Excel exportieren</string>
+    <string name="export_column_date">Datum</string>
+    <string name="export_column_amount">Betrag</string>
+    <string name="export_column_type">Transaktionstyp</string>
+    <string name="export_column_account">Konto</string>
+    <string name="export_column_category">Kategorie</string>
+    <string name="export_column_note">Notiz</string>
+    <string name="export_column_account_balance">Kontostand</string>
+    <string name="export_column_all_balance">Saldo aller Konten</string>
+    <string name="export_positive_button">Exportieren</string>
+    <string name="export_summary_title">Aktuelle Salden</string>
+    <string name="export_summary_total">Gesamt</string>
+    <string name="export_sheet_name">Transaktionen</string>
     <string name="sent_by_you">Von Ihnen gesendet</string>
     <string name="received_by_you">Von Ihnen erhalten</string>
     <string name="empty_transactions">Noch keine Transaktionen</string>
@@ -94,6 +110,7 @@
     <string name="theme_system">System</string>
     <string name="settings_hide_balance">Kontostände auf der Startseite ausblenden</string>
     <string name="settings_color_code_transactions">Einnahmen und Ausgaben farblich kennzeichnen</string>
+    <string name="settings_disable_animations">Animationen deaktivieren (für ältere Telefone)</string>
     <string name="settings_profile_name">Name</string>
     <string name="settings_about">Über die App</string>
     <string name="settings_about_body">Money Tracker · Version 1.0</string>

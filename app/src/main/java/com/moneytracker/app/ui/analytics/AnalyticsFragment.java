@@ -1,5 +1,6 @@
 package com.moneytracker.app.ui.analytics;
 
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,9 +22,12 @@ import com.moneytracker.app.R;
 import com.moneytracker.app.data.dao.TransactionDao;
 import com.moneytracker.app.data.entity.Account;
 import com.moneytracker.app.databinding.FragmentAnalyticsBinding;
+import com.moneytracker.app.ui.widget.ColorSwatchRow;
 import com.moneytracker.app.ui.widget.SegmentedToggle;
+import com.moneytracker.app.util.ContrastColor;
 import com.moneytracker.app.util.CurrencyFormatter;
 import com.moneytracker.app.util.DisplayNameResolver;
+import com.moneytracker.app.util.SettingsPrefs;
 import com.moneytracker.app.util.ViewAnimations;
 
 import java.util.ArrayList;
@@ -68,6 +72,17 @@ public class AnalyticsFragment extends Fragment {
         viewModel.getSelectedAccountId().observe(getViewLifecycleOwner(), id -> updateAccountFilterSelection());
     }
 
+    /** Tag attached to each account filter chip; {@code color} is null for the neutral "All" chip. */
+    private static class ChipData {
+        final Long accountId;
+        final Integer color;
+
+        ChipData(Long accountId, Integer color) {
+            this.accountId = accountId;
+            this.color = color;
+        }
+    }
+
     private void renderAccountFilter(List<Account> accounts) {
         binding.accountFilterRow.removeAllViews();
         if (accounts.size() < 2) {
@@ -75,20 +90,20 @@ public class AnalyticsFragment extends Fragment {
             return;
         }
 
-        binding.accountFilterRow.addView(createFilterChip(getString(R.string.analytics_filter_all), null));
+        binding.accountFilterRow.addView(createFilterChip(getString(R.string.analytics_filter_all), new ChipData(null, null)));
         for (Account account : accounts) {
             String name = DisplayNameResolver.resolve(requireContext(), account.getName());
-            binding.accountFilterRow.addView(createFilterChip(name, account.getId()));
+            int color = account.getColor() != 0 ? account.getColor() : ColorSwatchRow.DEFAULT_COLORS[0];
+            binding.accountFilterRow.addView(createFilterChip(name, new ChipData(account.getId(), color)));
         }
         updateAccountFilterSelection();
     }
 
-    private View createFilterChip(String label, Long accountId) {
+    private View createFilterChip(String label, ChipData data) {
         TextView chip = new TextView(requireContext());
         chip.setText(label);
-        chip.setTag(accountId);
+        chip.setTag(data);
         chip.setTextSize(12f);
-        chip.setBackgroundResource(R.drawable.bg_pill_white);
         int paddingH = (int) (16 * getResources().getDisplayMetrics().density);
         int paddingV = (int) (8 * getResources().getDisplayMetrics().density);
         chip.setPadding(paddingH, paddingV, paddingH, paddingV);
@@ -97,7 +112,7 @@ public class AnalyticsFragment extends Fragment {
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         params.setMarginEnd(marginEnd);
         chip.setLayoutParams(params);
-        chip.setOnClickListener(v -> viewModel.setSelectedAccountId(accountId));
+        chip.setOnClickListener(v -> viewModel.setSelectedAccountId(data.accountId));
         return chip;
     }
 
@@ -109,11 +124,32 @@ public class AnalyticsFragment extends Fragment {
                 continue;
             }
             TextView chip = (TextView) child;
-            Long chipId = (Long) chip.getTag();
-            boolean isSelected = selected == null ? chipId == null : selected.equals(chipId);
+            ChipData data = (ChipData) chip.getTag();
+            boolean isSelected = selected == null ? data.accountId == null : selected.equals(data.accountId);
+            styleChip(chip, data, isSelected);
+        }
+    }
+
+    private void styleChip(TextView chip, ChipData data, boolean isSelected) {
+        if (data.color == null) {
+            // Neutral "All" chip.
             chip.setBackgroundResource(isSelected ? R.drawable.bg_chip_selected : R.drawable.bg_pill_white);
             chip.setTextColor(requireContext().getColor(isSelected ? R.color.on_accent_text : R.color.text_primary));
+            return;
         }
+        int strokePx = (int) (1.5f * getResources().getDisplayMetrics().density);
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setShape(GradientDrawable.RECTANGLE);
+        drawable.setCornerRadius(24 * getResources().getDisplayMetrics().density);
+        if (isSelected) {
+            drawable.setColor(data.color);
+            chip.setTextColor(ContrastColor.forBackground(data.color));
+        } else {
+            drawable.setColor(requireContext().getColor(R.color.surface));
+            drawable.setStroke(strokePx, data.color);
+            chip.setTextColor(requireContext().getColor(R.color.text_primary));
+        }
+        chip.setBackground(drawable);
     }
 
     private void setupChart() {
@@ -156,7 +192,9 @@ public class AnalyticsFragment extends Fragment {
 
         PieData data = new PieData(dataSet);
         binding.pieChart.setData(data);
-        binding.pieChart.animateY(900, Easing.EaseOutCirc);
+        if (SettingsPrefs.isAnimationsEnabled(requireContext())) {
+            binding.pieChart.animateY(900, Easing.EaseOutCirc);
+        }
         binding.pieChart.invalidate();
     }
 

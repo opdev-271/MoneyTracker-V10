@@ -5,6 +5,8 @@ import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.moneytracker.app.util.SettingsPrefs;
+
 /**
  * Drives a sliding-pill segmented control: a colored indicator View that glides
  * under whichever of N equal-width TextViews is selected, instead of swapping
@@ -76,7 +78,7 @@ public class SegmentedToggle {
             indicator.setLayoutParams(params);
         }
         float targetX = segmentWidth * index;
-        if (animate) {
+        if (animate && SettingsPrefs.isAnimationsEnabled(indicator.getContext())) {
             indicator.animate()
                     .translationX(targetX)
                     .setDuration(260)

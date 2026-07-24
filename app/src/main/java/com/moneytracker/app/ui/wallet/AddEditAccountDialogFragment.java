@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.moneytracker.app.R;
 import com.moneytracker.app.data.entity.Account;
+import com.moneytracker.app.ui.widget.ColorSwatchRow;
 import com.moneytracker.app.ui.widget.SegmentedToggle;
 import com.moneytracker.app.util.OnboardingPrefs;
 import com.moneytracker.app.util.SettingsPrefs;
@@ -33,6 +35,7 @@ public class AddEditAccountDialogFragment extends DialogFragment {
     private static final String ARG_CURRENCY = "arg_currency";
     private static final String ARG_INITIAL_BALANCE = "arg_initial_balance";
     private static final String ARG_ACCOUNT_NUMBER = "arg_account_number";
+    private static final String ARG_COLOR = "arg_color";
 
     public static AddEditAccountDialogFragment newInstanceForAdd() {
         AddEditAccountDialogFragment fragment = new AddEditAccountDialogFragment();
@@ -51,6 +54,7 @@ public class AddEditAccountDialogFragment extends DialogFragment {
         args.putString(ARG_CURRENCY, account.getCurrencyCode());
         args.putDouble(ARG_INITIAL_BALANCE, account.getInitialBalance());
         args.putString(ARG_ACCOUNT_NUMBER, account.getAccountNumber());
+        args.putInt(ARG_COLOR, account.getColor());
         fragment.setArguments(args);
         return fragment;
     }
@@ -61,6 +65,7 @@ public class AddEditAccountDialogFragment extends DialogFragment {
     private EditText editInitialBalance;
     private EditText editAccountNumber;
     private SegmentedToggle typeToggle;
+    private ColorSwatchRow colorSwatchRow;
     private String selectedType = Account.TYPE_CASH;
 
     @NonNull
@@ -87,6 +92,11 @@ public class AddEditAccountDialogFragment extends DialogFragment {
             typeToggle.setSelectedIndex(index);
         });
         typeToggle.setSelectedIndex(typeToIndex(selectedType));
+
+        int existingColor = isEdit ? requireArguments().getInt(ARG_COLOR, 0) : 0;
+        int initialColor = existingColor != 0 ? existingColor : ColorSwatchRow.DEFAULT_COLORS[0];
+        LinearLayout colorRow = view.findViewById(R.id.color_row);
+        colorSwatchRow = new ColorSwatchRow(requireContext(), colorRow, ColorSwatchRow.DEFAULT_COLORS, initialColor);
 
         if (isEdit) {
             editName.setText(requireArguments().getString(ARG_NAME));
@@ -160,6 +170,7 @@ public class AddEditAccountDialogFragment extends DialogFragment {
         account.setCurrencyCode(currency != null ? currency : "CZK");
         account.setInitialBalance(initialBalance);
         account.setAccountNumber(TextUtils.isEmpty(accountNumber) ? null : accountNumber);
+        account.setColor(colorSwatchRow.getSelectedColor());
         account.setSortOrder(0);
 
         viewModel.saveAccount(account);

@@ -42,12 +42,12 @@
                 android:src="@drawable/ic_pfp_cat" />
         </LinearLayout>
 
-        <!-- Balance card -->
+        <!-- Balance card (frosted-glass style) -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_l"
-            android:background="@drawable/bg_card_white"
+            android:background="@drawable/bg_card_glass"
             android:elevation="3dp"
             android:padding="24dp">
 

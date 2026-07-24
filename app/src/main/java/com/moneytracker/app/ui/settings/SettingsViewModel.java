@@ -16,6 +16,7 @@ public class SettingsViewModel extends AndroidViewModel {
     private final MutableLiveData<String> language;
     private final MutableLiveData<Boolean> hideBalance;
     private final MutableLiveData<Boolean> colorCodeTransactions;
+    private final MutableLiveData<Boolean> animationsEnabled;
     private final MutableLiveData<String> theme;
 
     public SettingsViewModel(@NonNull Application application) {
@@ -23,6 +24,7 @@ public class SettingsViewModel extends AndroidViewModel {
         language = new MutableLiveData<>(LocaleHelper.getPersistedLanguage(application));
         hideBalance = new MutableLiveData<>(SettingsPrefs.isBalanceHidden(application));
         colorCodeTransactions = new MutableLiveData<>(SettingsPrefs.isColorCodeTransactions(application));
+        animationsEnabled = new MutableLiveData<>(SettingsPrefs.isAnimationsEnabled(application));
         theme = new MutableLiveData<>(ThemePrefs.getThemeMode(application));
     }
 
@@ -68,5 +70,14 @@ public class SettingsViewModel extends AndroidViewModel {
     public void setColorCodeTransactions(boolean enabled) {
         SettingsPrefs.setColorCodeTransactions(getApplication(), enabled);
         colorCodeTransactions.setValue(enabled);
+    }
+
+    public LiveData<Boolean> getAnimationsEnabled() {
+        return animationsEnabled;
+    }
+
+    public void setAnimationsEnabled(boolean enabled) {
+        SettingsPrefs.setAnimationsEnabled(getApplication(), enabled);
+        animationsEnabled.setValue(enabled);
     }
 }

@@ -17,6 +17,7 @@ public class SettingsPrefs {
     private static final String KEY_ACTIVE_ACCOUNT_ID = "active_account_id";
     private static final String KEY_ACTIVE_PROFILE_ID = "active_profile_id";
     private static final String KEY_COLOR_CODE_TRANSACTIONS = "color_code_transactions";
+    private static final String KEY_ANIMATIONS_ENABLED = "animations_enabled";
     private static final String KEY_BALANCE_ACCOUNTS_PREFIX = "balance_accounts_";
     private static final String BALANCE_ACCOUNTS_ALL = "ALL";
 
@@ -56,6 +57,14 @@ public class SettingsPrefs {
 
     public static void setColorCodeTransactions(Context context, boolean enabled) {
         prefs(context).edit().putBoolean(KEY_COLOR_CODE_TRANSACTIONS, enabled).apply();
+    }
+
+    public static boolean isAnimationsEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_ANIMATIONS_ENABLED, true);
+    }
+
+    public static void setAnimationsEnabled(Context context, boolean enabled) {
+        prefs(context).edit().putBoolean(KEY_ANIMATIONS_ENABLED, enabled).apply();
     }
 
     /**

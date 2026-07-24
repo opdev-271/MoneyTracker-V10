@@ -22,6 +22,7 @@ import com.moneytracker.app.util.CategoryIcons;
 import com.moneytracker.app.util.CurrencyFormatter;
 import com.moneytracker.app.util.DisplayNameResolver;
 import com.moneytracker.app.util.TransactionColors;
+import com.moneytracker.app.util.ViewAnimations;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +35,8 @@ public class AllTransactionsAdapter extends ListAdapter<AllTransactionsAdapter.L
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_TRANSACTION = 1;
+
+    private final int[] highestAnimatedPosition = {-1};
 
     public AllTransactionsAdapter() {
         super(DIFF_CALLBACK);
@@ -110,6 +113,7 @@ public class AllTransactionsAdapter extends ListAdapter<AllTransactionsAdapter.L
         } else {
             ((TransactionViewHolder) holder).bind((TransactionItem) item);
         }
+        ViewAnimations.animateItemEntranceOnce(holder.itemView, position, highestAnimatedPosition);
     }
 
     public abstract static class ListItem {

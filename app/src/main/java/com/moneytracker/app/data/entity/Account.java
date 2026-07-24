@@ -48,6 +48,9 @@ public class Account {
     @ColumnInfo(name = "account_number")
     private String accountNumber;
 
+    @ColumnInfo(name = "color")
+    private int color;
+
     @ColumnInfo(name = "sort_order")
     private int sortOrder;
 
@@ -108,6 +111,14 @@ public class Account {
 
     public void setAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 
     public int getSortOrder() {

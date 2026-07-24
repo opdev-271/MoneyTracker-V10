@@ -11,6 +11,22 @@
     <string name="transactions_title">Nedávné transakce</string>
     <string name="see_all">Další</string>
     <string name="all_transactions_title">Všechny transakce</string>
+
+    <!-- Export -->
+    <string name="export_action">Export</string>
+    <string name="export_columns_title">Export do Excelu</string>
+    <string name="export_column_date">Datum</string>
+    <string name="export_column_amount">Částka</string>
+    <string name="export_column_type">Typ transakce</string>
+    <string name="export_column_account">Účet</string>
+    <string name="export_column_category">Kategorie</string>
+    <string name="export_column_note">Poznámka</string>
+    <string name="export_column_account_balance">Zůstatek účtu</string>
+    <string name="export_column_all_balance">Zůstatek všech účtů</string>
+    <string name="export_positive_button">Exportovat</string>
+    <string name="export_summary_title">Aktuální zůstatky</string>
+    <string name="export_summary_total">Celkem</string>
+    <string name="export_sheet_name">Transakce</string>
     <string name="sent_by_you">Odesláno vámi</string>
     <string name="received_by_you">Přijato vámi</string>
     <string name="empty_transactions">Zatím žádné transakce</string>
@@ -94,6 +110,7 @@
     <string name="theme_system">Podle systému</string>
     <string name="settings_hide_balance">Skrýt zůstatky na hlavní obrazovce</string>
     <string name="settings_color_code_transactions">Barevně rozlišovat příjmy a výdaje</string>
+    <string name="settings_disable_animations">Vypnout animace (pro starší telefony)</string>
     <string name="settings_profile_name">Jméno</string>
     <string name="settings_about">O aplikaci</string>
     <string name="settings_about_body">Money Tracker · verze 1.0</string>

@@ -70,6 +70,8 @@ public class SettingsFragment extends Fragment {
                 viewModel.setHideBalance(binding.switchHideBalance.isChecked()));
         binding.switchColorCodeTransactions.setOnClickListener(v ->
                 viewModel.setColorCodeTransactions(binding.switchColorCodeTransactions.isChecked()));
+        binding.switchDisableAnimations.setOnClickListener(v ->
+                viewModel.setAnimationsEnabled(!binding.switchDisableAnimations.isChecked()));
 
         viewModel.getLanguage().observe(getViewLifecycleOwner(), language ->
                 languageToggle.setSelectedIndex(indexForLanguage(language)));
@@ -79,6 +81,8 @@ public class SettingsFragment extends Fragment {
                 binding.switchHideBalance.setChecked(Boolean.TRUE.equals(hidden)));
         viewModel.getColorCodeTransactions().observe(getViewLifecycleOwner(), enabled ->
                 binding.switchColorCodeTransactions.setChecked(Boolean.TRUE.equals(enabled)));
+        viewModel.getAnimationsEnabled().observe(getViewLifecycleOwner(), enabled ->
+                binding.switchDisableAnimations.setChecked(!Boolean.TRUE.equals(enabled)));
     }
 
     private void changeLanguage(String language) {

@@ -3,9 +3,9 @@ package com.moneytracker.app.ui.onboarding;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -15,6 +15,7 @@ import com.moneytracker.app.data.entity.Account;
 import com.moneytracker.app.data.entity.Profile;
 import com.moneytracker.app.databinding.ActivityOnboardingBinding;
 import com.moneytracker.app.ui.MainActivity;
+import com.moneytracker.app.ui.widget.ColorSwatchRow;
 import com.moneytracker.app.ui.widget.IconGridAdapter;
 import com.moneytracker.app.ui.widget.SegmentedToggle;
 import com.moneytracker.app.util.LocaleHelper;
@@ -24,18 +25,21 @@ import com.moneytracker.app.util.SettingsPrefs;
 import com.moneytracker.app.util.ThemePrefs;
 
 /**
- * Shown once, on first launch. Answers are only committed (locale/theme applied,
- * onboarding marked done) when the user taps "Get started" — applying the theme
- * live on each tap would call AppCompatDelegate.setDefaultNightMode(), which
- * recreates every running AppCompatActivity including this one, wiping the form.
+ * Shown once, on first launch. Language and theme apply immediately (each recreates
+ * this Activity — theme via AppCompatDelegate, language via an explicit recreate()),
+ * so the user sees the effect live instead of only after "Get started". Everything
+ * else the user has entered survives that recreation via onSaveInstanceState.
  */
 public class OnboardingActivity extends AppCompatActivity {
 
     private static final String[] CURRENCIES = {"CZK", "EUR", "USD", "GBP"};
+    private static final String STATE_NAME = "state_name";
+    private static final String STATE_PICTOGRAM = "state_pictogram";
+    private static final String STATE_CURRENCY = "state_currency";
 
     private ActivityOnboardingBinding binding;
     private String selectedLanguage;
-    private String selectedTheme = ThemePrefs.THEME_SYSTEM;
+    private String selectedTheme;
     private String selectedCurrency = "CZK";
     private String selectedPictogram = "pfp_cat";
 
@@ -51,6 +55,16 @@ public class OnboardingActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         selectedLanguage = LocaleHelper.getPersistedLanguage(this);
+        selectedTheme = ThemePrefs.getThemeMode(this);
+        String restoredName = null;
+        if (savedInstanceState != null) {
+            restoredName = savedInstanceState.getString(STATE_NAME);
+            selectedPictogram = savedInstanceState.getString(STATE_PICTOGRAM, selectedPictogram);
+            selectedCurrency = savedInstanceState.getString(STATE_CURRENCY, selectedCurrency);
+        }
+        if (restoredName != null) {
+            binding.editName.setText(restoredName);
+        }
 
         int selectedColor = getColor(R.color.on_accent_text);
         int unselectedColor = getColor(R.color.text_secondary);
@@ -65,8 +79,11 @@ public class OnboardingActivity extends AppCompatActivity {
                 new TextView[]{binding.optionEnglish, binding.optionCzech, binding.optionGerman},
                 selectedColor, unselectedColor);
         languageToggle.setOnSegmentSelectedListener(index -> {
-            selectedLanguage = languageForIndex(index);
-            languageToggle.setSelectedIndex(index);
+            String newLanguage = languageForIndex(index);
+            if (!newLanguage.equals(selectedLanguage)) {
+                LocaleHelper.persistLanguage(this, newLanguage);
+                recreate();
+            }
         });
         languageToggle.setSelectedIndex(indexForLanguage(selectedLanguage));
 
@@ -74,8 +91,11 @@ public class OnboardingActivity extends AppCompatActivity {
                 new TextView[]{binding.optionThemeLight, binding.optionThemeDark, binding.optionThemeSystem},
                 selectedColor, unselectedColor);
         themeToggle.setOnSegmentSelectedListener(index -> {
-            selectedTheme = themeForIndex(index);
-            themeToggle.setSelectedIndex(index);
+            String newTheme = themeForIndex(index);
+            if (!newTheme.equals(selectedTheme)) {
+                // Applies immediately and recreates this Activity on its own.
+                ThemePrefs.setThemeMode(this, newTheme);
+            }
         });
         themeToggle.setSelectedIndex(indexForTheme(selectedTheme));
 
@@ -87,9 +107,17 @@ public class OnboardingActivity extends AppCompatActivity {
             selectedCurrency = CURRENCIES[index];
             currencyToggle.setSelectedIndex(index);
         });
-        currencyToggle.setSelectedIndex(0);
+        currencyToggle.setSelectedIndex(indexForCurrency(selectedCurrency));
 
         binding.btnGetStarted.setOnClickListener(v -> finishOnboarding());
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(STATE_NAME, binding.editName.getText().toString());
+        outState.putString(STATE_PICTOGRAM, selectedPictogram);
+        outState.putString(STATE_CURRENCY, selectedCurrency);
     }
 
     private void finishOnboarding() {
@@ -113,6 +141,7 @@ public class OnboardingActivity extends AppCompatActivity {
             cash.setAccountType(Account.TYPE_CASH);
             cash.setCurrencyCode(selectedCurrency);
             cash.setInitialBalance(0);
+            cash.setColor(ColorSwatchRow.DEFAULT_COLORS[0]);
             cash.setSortOrder(0);
             app.getAccountRepository().insert(cash, accountId -> {
                 startActivity(new Intent(this, MainActivity.class));
@@ -159,6 +188,15 @@ public class OnboardingActivity extends AppCompatActivity {
         }
         if (ThemePrefs.THEME_SYSTEM.equals(theme)) {
             return 2;
+        }
+        return 0;
+    }
+
+    private static int indexForCurrency(String currency) {
+        for (int i = 0; i < CURRENCIES.length; i++) {
+            if (CURRENCIES[i].equals(currency)) {
+                return i;
+            }
         }
         return 0;
     }

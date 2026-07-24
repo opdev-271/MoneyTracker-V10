@@ -36,6 +36,9 @@ public interface AccountDao {
     @Query("SELECT * FROM accounts WHERE id = :accountId")
     Account getAccountByIdSync(long accountId);
 
+    @Query("SELECT * FROM accounts WHERE id IN (:accountIds)")
+    List<Account> getAccountsByIdsSync(List<Long> accountIds);
+
     @Query("SELECT COUNT(*) FROM accounts WHERE profile_id = :profileId")
     int countForProfileSync(long profileId);
 

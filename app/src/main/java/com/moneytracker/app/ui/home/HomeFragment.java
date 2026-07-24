@@ -24,6 +24,7 @@ import com.moneytracker.app.ui.alltransactions.AllTransactionsActivity;
 import com.moneytracker.app.util.CurrencyFormatter;
 import com.moneytracker.app.util.DisplayNameResolver;
 import com.moneytracker.app.util.ProfileIcons;
+import com.moneytracker.app.util.SettingsPrefs;
 import com.moneytracker.app.util.ViewAnimations;
 
 import java.util.ArrayList;
@@ -171,6 +172,10 @@ public class HomeFragment extends Fragment {
         if (balanceAnimator != null) {
             balanceAnimator.cancel();
         }
+        if (!SettingsPrefs.isAnimationsEnabled(requireContext())) {
+            binding.textBalance.setText(CurrencyFormatter.format(balance.floatValue(), currency));
+            return;
+        }
         String finalCurrency = currency;
         balanceAnimator = ValueAnimator.ofFloat((float) from, balance.floatValue());
         balanceAnimator.setDuration(700);
@@ -181,6 +186,10 @@ public class HomeFragment extends Fragment {
     }
 
     private void animateEyeIconSwap(boolean hidden) {
+        if (!SettingsPrefs.isAnimationsEnabled(requireContext())) {
+            binding.btnToggleBalance.setImageResource(hidden ? R.drawable.ic_eye_off : R.drawable.ic_eye);
+            return;
+        }
         binding.btnToggleBalance.animate().scaleX(0f).scaleY(0f).setDuration(120)
                 .withEndAction(() -> {
                     if (binding == null) {

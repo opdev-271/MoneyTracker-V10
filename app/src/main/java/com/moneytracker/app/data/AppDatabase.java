@@ -23,7 +23,7 @@ import java.util.Arrays;
 
 @Database(
         entities = {Account.class, Category.class, Transaction.class, Profile.class},
-        version = 3,
+        version = 4,
         exportSchema = false
 )
 @TypeConverters({Converters.class})
