@@ -83,7 +83,10 @@
     <string name="dialog_add_account_title">Add account</string>
     <string name="dialog_edit_account_title">Edit account</string>
     <string name="action_delete">Delete</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_duplicate">Duplicate</string>
     <string name="action_cancel">Cancel</string>
+    <string name="edit_transaction_title">Edit transaction</string>
     <string name="empty_accounts">No accounts yet</string>
 
     <!-- Analytics -->

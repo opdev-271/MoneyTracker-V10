@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.moneytracker.app.R;
 import com.moneytracker.app.data.entity.Account;
 import com.moneytracker.app.data.entity.Category;
+import com.moneytracker.app.data.entity.Transaction;
 import com.moneytracker.app.databinding.ActivityAddTransactionBinding;
 import com.moneytracker.app.ui.widget.SegmentedToggle;
 import com.moneytracker.app.util.CurrencyFormatter;
@@ -31,6 +32,7 @@ public class AddTransactionActivity extends AppCompatActivity {
 
     private static final String EXTRA_TYPE = "extra_type";
     private static final String EXTRA_ACCOUNT_ID = "extra_account_id";
+    private static final String EXTRA_TRANSACTION_ID = "extra_transaction_id";
 
     public static Intent newIntent(Context context, String type, long accountId) {
         Intent intent = new Intent(context, AddTransactionActivity.class);
@@ -39,9 +41,16 @@ public class AddTransactionActivity extends AppCompatActivity {
         return intent;
     }
 
+    public static Intent newIntentForEdit(Context context, long transactionId) {
+        Intent intent = new Intent(context, AddTransactionActivity.class);
+        intent.putExtra(EXTRA_TRANSACTION_ID, transactionId);
+        return intent;
+    }
+
     private ActivityAddTransactionBinding binding;
     private AddTransactionViewModel viewModel;
     private SegmentedToggle typeToggle;
+    private boolean editFormPopulated = false;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -58,6 +67,13 @@ public class AddTransactionActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(AddTransactionViewModel.class);
         viewModel.setInitialType(getIntent().getStringExtra(EXTRA_TYPE));
         viewModel.setInitialAccountId(getIntent().getLongExtra(EXTRA_ACCOUNT_ID, -1L));
+
+        long editTransactionId = getIntent().getLongExtra(EXTRA_TRANSACTION_ID, -1L);
+        if (editTransactionId != -1L) {
+            binding.textTitle.setText(R.string.edit_transaction_title);
+            viewModel.setEditingTransactionId(editTransactionId);
+            viewModel.getTransactionById(editTransactionId).observe(this, this::populateForEdit);
+        }
 
         typeToggle = new SegmentedToggle(binding.toggleContainer, binding.toggleIndicator,
                 new TextView[]{binding.toggleExpense, binding.toggleIncome},
@@ -99,6 +115,21 @@ public class AddTransactionActivity extends AppCompatActivity {
                 closeWithSlideDown();
             }
         });
+    }
+
+    private void populateForEdit(Transaction transaction) {
+        if (transaction == null || editFormPopulated) {
+            return;
+        }
+        editFormPopulated = true;
+        viewModel.setType(transaction.getType());
+        viewModel.setSelectedAccountId(transaction.getAccountId());
+        if (transaction.getCategoryId() != null) {
+            viewModel.setSelectedCategoryId(transaction.getCategoryId());
+        }
+        viewModel.setSelectedDateMillis(transaction.getDate().getTime());
+        binding.editAmount.setText(String.valueOf(transaction.getAmount()));
+        binding.editDescription.setText(transaction.getNote());
     }
 
     private void closeWithSlideDown() {

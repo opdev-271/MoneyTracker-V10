@@ -11,16 +11,21 @@ import android.view.animation.OvershootInterpolator;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.moneytracker.app.MoneyTrackerApp;
 import com.moneytracker.app.R;
 import com.moneytracker.app.data.entity.Account;
 import com.moneytracker.app.data.entity.Category;
+import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.databinding.FragmentHomeBinding;
 import com.moneytracker.app.ui.addtransaction.AddTransactionActivity;
 import com.moneytracker.app.ui.alltransactions.AllTransactionsActivity;
+import com.moneytracker.app.ui.widget.OnTransactionInteractionListener;
+import com.moneytracker.app.ui.widget.TransactionSelectionController;
 import com.moneytracker.app.util.CurrencyFormatter;
 import com.moneytracker.app.util.DisplayNameResolver;
 import com.moneytracker.app.util.ProfileIcons;
@@ -38,6 +43,8 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private TransactionAdapter adapter;
+    private TransactionSelectionController selectionController;
+    private List<TransactionWithDetails> latestTransactions = new ArrayList<>();
 
     private Double latestBalance;
     private double displayedBalance = Double.NaN;
@@ -57,7 +64,38 @@ public class HomeFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         ViewAnimations.fadeInContent(view);
 
-        adapter = new TransactionAdapter();
+        selectionController = new TransactionSelectionController((AppCompatActivity) requireActivity(),
+                MoneyTrackerApp.from(requireContext()).getTransactionRepository(),
+                new TransactionSelectionController.Host() {
+                    @Override
+                    public TransactionWithDetails findTransactionById(long id) {
+                        for (TransactionWithDetails t : latestTransactions) {
+                            if (t.id == id) {
+                                return t;
+                            }
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public void onSelectionChanged(Set<Long> selectedIds) {
+                        if (adapter != null) {
+                            adapter.setSelectedIds(selectedIds);
+                        }
+                    }
+                });
+
+        adapter = new TransactionAdapter(new OnTransactionInteractionListener() {
+            @Override
+            public void onTransactionLongClick(long transactionId) {
+                selectionController.onItemLongClicked(transactionId);
+            }
+
+            @Override
+            public void onTransactionClick(long transactionId) {
+                selectionController.onItemClicked(transactionId);
+            }
+        });
         binding.recyclerTransactions.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerTransactions.setAdapter(adapter);
 
@@ -117,8 +155,9 @@ public class HomeFragment extends Fragment {
         });
 
         viewModel.getRecentTransactions().observe(getViewLifecycleOwner(), transactions -> {
+            latestTransactions = transactions != null ? transactions : new ArrayList<>();
             adapter.submitList(transactions);
-            boolean empty = transactions == null || transactions.isEmpty();
+            boolean empty = latestTransactions.isEmpty();
             binding.textEmpty.setVisibility(empty ? View.VISIBLE : View.GONE);
             binding.recyclerTransactions.setVisibility(empty ? View.GONE : View.VISIBLE);
         });

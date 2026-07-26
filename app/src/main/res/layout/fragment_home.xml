@@ -55,26 +55,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|end"
-                android:orientation="horizontal">
-
-                <ImageButton
-                    android:id="@+id/btn_balance_accounts"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:background="@drawable/bg_circle_light"
-                    android:contentDescription="@string/balance_accounts_picker_title"
-                    android:padding="9dp"
-                    android:src="@drawable/ic_gear" />
+                android:orientation="vertical">
 
                 <ImageButton
                     android:id="@+id/btn_toggle_balance"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:layout_marginStart="8dp"
                     android:background="@drawable/bg_circle_light"
                     android:contentDescription="@null"
                     android:padding="8dp"
                     android:src="@drawable/ic_eye" />
+
+                <ImageButton
+                    android:id="@+id/btn_balance_accounts"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_circle_light"
+                    android:contentDescription="@string/balance_accounts_picker_title"
+                    android:padding="9dp"
+                    android:src="@drawable/ic_gear" />
             </LinearLayout>
 
             <LinearLayout

@@ -83,7 +83,10 @@
     <string name="dialog_add_account_title">Přidat účet</string>
     <string name="dialog_edit_account_title">Upravit účet</string>
     <string name="action_delete">Smazat</string>
+    <string name="action_edit">Upravit</string>
+    <string name="action_duplicate">Duplikovat</string>
     <string name="action_cancel">Zrušit</string>
+    <string name="edit_transaction_title">Upravit transakci</string>
     <string name="empty_accounts">Zatím žádné účty</string>
 
     <!-- Analytics -->

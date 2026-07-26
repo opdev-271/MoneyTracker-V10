@@ -21,18 +21,29 @@ import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.util.CategoryIcons;
 import com.moneytracker.app.util.CurrencyFormatter;
 import com.moneytracker.app.util.DisplayNameResolver;
+import com.moneytracker.app.ui.widget.OnTransactionInteractionListener;
 import com.moneytracker.app.util.TransactionColors;
 import com.moneytracker.app.util.ViewAnimations;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Set;
 
 public class TransactionAdapter extends ListAdapter<TransactionWithDetails, TransactionAdapter.ViewHolder> {
 
     private final int[] highestAnimatedPosition = {-1};
+    private final OnTransactionInteractionListener listener;
+    private Set<Long> selectedIds = Collections.emptySet();
 
-    public TransactionAdapter() {
+    public TransactionAdapter(OnTransactionInteractionListener listener) {
         super(DIFF_CALLBACK);
+        this.listener = listener;
+    }
+
+    public void setSelectedIds(Set<Long> selectedIds) {
+        this.selectedIds = selectedIds;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -45,7 +56,8 @@ public class TransactionAdapter extends ListAdapter<TransactionWithDetails, Tran
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(getItem(position));
+        TransactionWithDetails item = getItem(position);
+        holder.bind(item, selectedIds.contains(item.id), listener);
         ViewAnimations.animateItemEntranceOnce(holder.itemView, position, highestAnimatedPosition);
     }
 
@@ -65,7 +77,7 @@ public class TransactionAdapter extends ListAdapter<TransactionWithDetails, Tran
             textAmount = itemView.findViewById(R.id.text_amount);
         }
 
-        void bind(TransactionWithDetails item) {
+        void bind(TransactionWithDetails item, boolean selected, OnTransactionInteractionListener listener) {
             Context context = itemView.getContext();
             boolean isExpense = Category.TYPE_EXPENSE.equals(item.type);
 
@@ -92,6 +104,13 @@ public class TransactionAdapter extends ListAdapter<TransactionWithDetails, Tran
             double signed = isExpense ? -item.amount : item.amount;
             textAmount.setText(CurrencyFormatter.formatSigned(signed, item.accountCurrency));
             textAmount.setTextColor(TransactionColors.amountColor(context, item.type));
+
+            itemView.setBackgroundResource(selected ? R.drawable.bg_row_selected : R.drawable.bg_card_white_small);
+            itemView.setOnLongClickListener(v -> {
+                listener.onTransactionLongClick(item.id);
+                return true;
+            });
+            itemView.setOnClickListener(v -> listener.onTransactionClick(item.id));
         }
     }
 

@@ -36,6 +36,7 @@ public class AddTransactionViewModel extends AndroidViewModel {
     private final LiveData<List<Category>> categories;
 
     private final MutableLiveData<Event<Boolean>> savedEvent = new MutableLiveData<>();
+    private Long editingTransactionId;
 
     public AddTransactionViewModel(@NonNull Application application) {
         super(application);
@@ -58,6 +59,18 @@ public class AddTransactionViewModel extends AndroidViewModel {
         if (accountId != -1L) {
             selectedAccountId.setValue(accountId);
         }
+    }
+
+    public void setEditingTransactionId(long transactionId) {
+        this.editingTransactionId = transactionId;
+    }
+
+    public boolean isEditing() {
+        return editingTransactionId != null;
+    }
+
+    public LiveData<Transaction> getTransactionById(long transactionId) {
+        return transactionRepository.getTransactionById(transactionId);
     }
 
     public LiveData<String> getType() {
@@ -122,6 +135,9 @@ public class AddTransactionViewModel extends AndroidViewModel {
             return;
         }
         Transaction transaction = new Transaction();
+        if (editingTransactionId != null) {
+            transaction.setId(editingTransactionId);
+        }
         transaction.setAccountId(accountId);
         transaction.setCategoryId(categoryId);
         transaction.setType(type.getValue());
@@ -131,6 +147,11 @@ public class AddTransactionViewModel extends AndroidViewModel {
         Long dateMillis = selectedDateMillis.getValue();
         transaction.setDate(new java.util.Date(dateMillis != null ? dateMillis : System.currentTimeMillis()));
 
-        transactionRepository.insert(transaction, id -> savedEvent.setValue(new Event<>(true)));
+        if (editingTransactionId != null) {
+            transactionRepository.update(transaction);
+            savedEvent.setValue(new Event<>(true));
+        } else {
+            transactionRepository.insert(transaction, id -> savedEvent.setValue(new Event<>(true)));
+        }
     }
 }

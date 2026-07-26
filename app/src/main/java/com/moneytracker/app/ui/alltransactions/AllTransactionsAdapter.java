@@ -21,14 +21,17 @@ import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.util.CategoryIcons;
 import com.moneytracker.app.util.CurrencyFormatter;
 import com.moneytracker.app.util.DisplayNameResolver;
+import com.moneytracker.app.ui.widget.OnTransactionInteractionListener;
 import com.moneytracker.app.util.TransactionColors;
 import com.moneytracker.app.util.ViewAnimations;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 /** Flat list of date headers (day balance) + transaction rows, grouped from a date-DESC list. */
 public class AllTransactionsAdapter extends ListAdapter<AllTransactionsAdapter.ListItem, RecyclerView.ViewHolder> {
@@ -37,9 +40,17 @@ public class AllTransactionsAdapter extends ListAdapter<AllTransactionsAdapter.L
     private static final int TYPE_TRANSACTION = 1;
 
     private final int[] highestAnimatedPosition = {-1};
+    private final OnTransactionInteractionListener listener;
+    private Set<Long> selectedIds = Collections.emptySet();
 
-    public AllTransactionsAdapter() {
+    public AllTransactionsAdapter(OnTransactionInteractionListener listener) {
         super(DIFF_CALLBACK);
+        this.listener = listener;
+    }
+
+    public void setSelectedIds(Set<Long> selectedIds) {
+        this.selectedIds = selectedIds;
+        notifyDataSetChanged();
     }
 
     public static List<ListItem> buildItems(List<TransactionWithDetails> transactions) {
@@ -111,7 +122,9 @@ public class AllTransactionsAdapter extends ListAdapter<AllTransactionsAdapter.L
         if (holder instanceof HeaderViewHolder) {
             ((HeaderViewHolder) holder).bind((HeaderItem) item);
         } else {
-            ((TransactionViewHolder) holder).bind((TransactionItem) item);
+            TransactionItem transactionItem = (TransactionItem) item;
+            boolean selected = selectedIds.contains(transactionItem.transaction.id);
+            ((TransactionViewHolder) holder).bind(transactionItem, selected, listener);
         }
         ViewAnimations.animateItemEntranceOnce(holder.itemView, position, highestAnimatedPosition);
     }
@@ -174,7 +187,7 @@ public class AllTransactionsAdapter extends ListAdapter<AllTransactionsAdapter.L
             textAmount = itemView.findViewById(R.id.text_amount);
         }
 
-        void bind(TransactionItem item) {
+        void bind(TransactionItem item, boolean selected, OnTransactionInteractionListener listener) {
             TransactionWithDetails t = item.transaction;
             Context context = itemView.getContext();
             boolean isExpense = Category.TYPE_EXPENSE.equals(t.type);
@@ -201,6 +214,13 @@ public class AllTransactionsAdapter extends ListAdapter<AllTransactionsAdapter.L
             double signed = isExpense ? -t.amount : t.amount;
             textAmount.setText(CurrencyFormatter.formatSigned(signed, t.accountCurrency));
             textAmount.setTextColor(TransactionColors.amountColor(context, t.type));
+
+            itemView.setBackgroundResource(selected ? R.drawable.bg_row_selected : R.drawable.bg_card_white_small);
+            itemView.setOnLongClickListener(v -> {
+                listener.onTransactionLongClick(t.id);
+                return true;
+            });
+            itemView.setOnClickListener(v -> listener.onTransactionClick(t.id));
         }
     }
 

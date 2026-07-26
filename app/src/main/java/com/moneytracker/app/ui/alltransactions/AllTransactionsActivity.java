@@ -18,11 +18,14 @@ import com.moneytracker.app.R;
 import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.data.repository.AccountRepository;
 import com.moneytracker.app.databinding.ActivityAllTransactionsBinding;
+import com.moneytracker.app.ui.widget.OnTransactionInteractionListener;
+import com.moneytracker.app.ui.widget.TransactionSelectionController;
 import com.moneytracker.app.util.LocaleHelper;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class AllTransactionsActivity extends AppCompatActivity {
 
@@ -40,6 +43,7 @@ public class AllTransactionsActivity extends AppCompatActivity {
 
     private ActivityAllTransactionsBinding binding;
     private AllTransactionsAdapter adapter;
+    private TransactionSelectionController selectionController;
     private List<TransactionWithDetails> latestTransactions = new ArrayList<>();
 
     @Override
@@ -54,7 +58,38 @@ public class AllTransactionsActivity extends AppCompatActivity {
         binding = ActivityAllTransactionsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        adapter = new AllTransactionsAdapter();
+        selectionController = new TransactionSelectionController(this,
+                MoneyTrackerApp.from(this).getTransactionRepository(),
+                new TransactionSelectionController.Host() {
+                    @Override
+                    public TransactionWithDetails findTransactionById(long id) {
+                        for (TransactionWithDetails t : latestTransactions) {
+                            if (t.id == id) {
+                                return t;
+                            }
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    public void onSelectionChanged(Set<Long> selectedIds) {
+                        if (adapter != null) {
+                            adapter.setSelectedIds(selectedIds);
+                        }
+                    }
+                });
+
+        adapter = new AllTransactionsAdapter(new OnTransactionInteractionListener() {
+            @Override
+            public void onTransactionLongClick(long transactionId) {
+                selectionController.onItemLongClicked(transactionId);
+            }
+
+            @Override
+            public void onTransactionClick(long transactionId) {
+                selectionController.onItemClicked(transactionId);
+            }
+        });
         binding.recyclerTransactions.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerTransactions.setAdapter(adapter);
 

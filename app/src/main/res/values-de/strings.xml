@@ -83,7 +83,10 @@
     <string name="dialog_add_account_title">Konto hinzufügen</string>
     <string name="dialog_edit_account_title">Konto bearbeiten</string>
     <string name="action_delete">Löschen</string>
+    <string name="action_edit">Bearbeiten</string>
+    <string name="action_duplicate">Duplizieren</string>
     <string name="action_cancel">Abbrechen</string>
+    <string name="edit_transaction_title">Transaktion bearbeiten</string>
     <string name="empty_accounts">Noch keine Konten</string>
 
     <!-- Analytics -->
