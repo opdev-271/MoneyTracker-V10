@@ -12,6 +12,7 @@ import androidx.lifecycle.Transformations;
 import com.moneytracker.app.MoneyTrackerApp;
 import com.moneytracker.app.data.dao.TransactionDao;
 import com.moneytracker.app.data.entity.Account;
+import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.data.repository.AccountRepository;
 import com.moneytracker.app.data.repository.TransactionRepository;
 import com.moneytracker.app.util.SettingsPrefs;
@@ -51,7 +52,9 @@ public class AnalyticsViewModel extends AndroidViewModel {
 
     private final LiveData<Double> totalIncome;
     private final LiveData<Double> totalExpense;
+    private final LiveData<Double> previousTotalExpense;
     private final LiveData<List<TransactionDao.CategoryTotal>> categoryTotals;
+    private final LiveData<List<TransactionWithDetails>> periodTransactions;
 
     public AnalyticsViewModel(@NonNull Application application) {
         super(application);
@@ -78,6 +81,38 @@ public class AnalyticsViewModel extends AndroidViewModel {
         categoryTotals = Transformations.switchMap(queryParams, params ->
                 params.accountIds.isEmpty() ? new MutableLiveData<>(new ArrayList<>())
                         : transactionRepository.getExpenseTotalsByCategoryForAccounts(params.accountIds, params.range[0], params.range[1]));
+        periodTransactions = Transformations.switchMap(queryParams, params ->
+                params.accountIds.isEmpty() ? new MutableLiveData<>(new ArrayList<>())
+                        : transactionRepository.getTransactionsBetweenForAccounts(params.accountIds, params.range[0], params.range[1]));
+        previousTotalExpense = Transformations.switchMap(queryParams, params -> {
+            if (params.accountIds.isEmpty()) {
+                return new MutableLiveData<>(0d);
+            }
+            long[] prev = previousRangeOf(params.range, period.getValue());
+            return transactionRepository.getTotalExpenseBetweenForAccounts(params.accountIds, prev[0], prev[1]);
+        });
+    }
+
+    /** The same-length window immediately before the current one (last month for MONTH, etc.). */
+    private static long[] previousRangeOf(long[] range, Period period) {
+        Calendar start = Calendar.getInstance();
+        start.setTimeInMillis(range[0]);
+        switch (period != null ? period : Period.MONTH) {
+            case DAY:
+                start.add(Calendar.DAY_OF_YEAR, -1);
+                break;
+            case WEEK:
+                start.add(Calendar.DAY_OF_YEAR, -7);
+                break;
+            case YEAR:
+                start.add(Calendar.YEAR, -1);
+                break;
+            case MONTH:
+            default:
+                start.add(Calendar.MONTH, -1);
+                break;
+        }
+        return new long[]{start.getTimeInMillis(), range[0] - 1};
     }
 
     private void recomputeResolvedIds() {
@@ -153,6 +188,10 @@ public class AnalyticsViewModel extends AndroidViewModel {
         return period;
     }
 
+    public LiveData<long[]> getDateRange() {
+        return dateRange;
+    }
+
     public LiveData<List<Account>> getAccounts() {
         return accounts;
     }
@@ -177,5 +216,13 @@ public class AnalyticsViewModel extends AndroidViewModel {
 
     public LiveData<List<TransactionDao.CategoryTotal>> getCategoryTotals() {
         return categoryTotals;
+    }
+
+    public LiveData<Double> getPreviousTotalExpense() {
+        return previousTotalExpense;
+    }
+
+    public LiveData<List<TransactionWithDetails>> getPeriodTransactions() {
+        return periodTransactions;
     }
 }

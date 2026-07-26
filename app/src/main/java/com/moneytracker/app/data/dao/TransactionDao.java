@@ -41,6 +41,10 @@ public interface TransactionDao {
     @Query(DETAILS_SELECT + "WHERE t.account_id IN (:accountIds) ORDER BY t.date DESC, t.id DESC LIMIT :limit")
     LiveData<List<TransactionWithDetails>> getRecentTransactionsForAccounts(List<Long> accountIds, int limit);
 
+    @Query(DETAILS_SELECT + "WHERE t.account_id IN (:accountIds) AND t.date BETWEEN :startMillis AND :endMillis " +
+            "ORDER BY t.date ASC, t.id ASC")
+    LiveData<List<TransactionWithDetails>> getTransactionsBetweenForAccounts(List<Long> accountIds, long startMillis, long endMillis);
+
     @Query("SELECT IFNULL(SUM(amount), 0) FROM transactions " +
             "WHERE type = 'INCOME' AND account_id IN (:accountIds) AND date BETWEEN :startMillis AND :endMillis")
     LiveData<Double> getTotalIncomeBetweenForAccounts(List<Long> accountIds, long startMillis, long endMillis);

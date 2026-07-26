@@ -164,6 +164,10 @@ public class HomeViewModel extends AndroidViewModel {
         return balance;
     }
 
+    public LiveData<List<AccountWithBalance>> getAccountsWithBalance() {
+        return accountsWithBalance;
+    }
+
     public LiveData<List<TransactionWithDetails>> getRecentTransactions() {
         return recentTransactions;
     }

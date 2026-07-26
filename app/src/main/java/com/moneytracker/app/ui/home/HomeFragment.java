@@ -24,6 +24,7 @@ import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.databinding.FragmentHomeBinding;
 import com.moneytracker.app.ui.addtransaction.AddTransactionActivity;
 import com.moneytracker.app.ui.alltransactions.AllTransactionsActivity;
+import com.moneytracker.app.ui.wallet.AddEditAccountDialogFragment;
 import com.moneytracker.app.ui.widget.OnTransactionInteractionListener;
 import com.moneytracker.app.ui.widget.TransactionSelectionController;
 import com.moneytracker.app.util.CurrencyFormatter;
@@ -44,6 +45,7 @@ public class HomeFragment extends Fragment {
     private FragmentHomeBinding binding;
     private HomeViewModel viewModel;
     private TransactionAdapter adapter;
+    private AccountCardAdapter accountCardAdapter;
     private TransactionSelectionController selectionController;
     private List<TransactionWithDetails> latestTransactions = new ArrayList<>();
 
@@ -100,6 +102,19 @@ public class HomeFragment extends Fragment {
         binding.recyclerTransactions.setLayoutManager(new LinearLayoutManager(requireContext()));
         binding.recyclerTransactions.setAdapter(adapter);
 
+        accountCardAdapter = new AccountCardAdapter(item -> {
+            String resolvedName = DisplayNameResolver.resolve(requireContext(), item.account.getName());
+            AddEditAccountDialogFragment.newInstanceForEdit(item.account, resolvedName)
+                    .show(getChildFragmentManager(), "edit_account");
+        });
+        binding.recyclerAccountCards.setLayoutManager(
+                new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false));
+        binding.recyclerAccountCards.setAdapter(accountCardAdapter);
+        binding.btnAddAccountHome.setOnClickListener(v ->
+                AddEditAccountDialogFragment.newInstanceForAdd().show(getChildFragmentManager(), "add_account"));
+
+        binding.textGreeting.setText(resolveGreeting());
+
         binding.btnToggleBalance.setOnClickListener(v -> viewModel.toggleBalanceHidden());
         binding.btnSeeAll.setOnClickListener(v -> {
             List<Long> ids = viewModel.getResolvedAccountIds().getValue();
@@ -114,9 +129,21 @@ public class HomeFragment extends Fragment {
         binding.btnBalanceAccounts.setOnClickListener(v ->
                 BalanceAccountsPickerDialogFragment.newInstance().show(getChildFragmentManager(), "balance_accounts"));
 
-        ViewAnimations.addPressFeedback(binding.btnExpense, binding.btnIncome, binding.btnSeeAll, binding.btnAvatar);
+        ViewAnimations.addPressFeedback(binding.btnExpense, binding.btnIncome, binding.btnSeeAll,
+                binding.btnAvatar, binding.btnAddAccountHome);
 
         observeViewModel();
+    }
+
+    private int resolveGreeting() {
+        int hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY);
+        if (hour >= 5 && hour < 12) {
+            return R.string.greeting_morning;
+        }
+        if (hour >= 12 && hour < 18) {
+            return R.string.greeting_afternoon;
+        }
+        return R.string.greeting_evening;
     }
 
     private void showProfileSwitcher() {
@@ -129,7 +156,14 @@ public class HomeFragment extends Fragment {
         viewModel.getActiveProfile().observe(getViewLifecycleOwner(), profile -> {
             if (profile != null) {
                 binding.btnAvatar.setImageResource(ProfileIcons.resolve(profile.getPictogram()));
+                binding.textProfileName.setText(profile.getName());
             }
+        });
+
+        viewModel.getAccountsWithBalance().observe(getViewLifecycleOwner(), accounts -> {
+            accountCardAdapter.submitList(accounts);
+            boolean empty = accounts == null || accounts.isEmpty();
+            binding.recyclerAccountCards.setVisibility(empty ? View.GONE : View.VISIBLE);
         });
 
         viewModel.getAccounts().observe(getViewLifecycleOwner(), accounts -> updateBalanceLabel());
@@ -144,6 +178,7 @@ public class HomeFragment extends Fragment {
 
         viewModel.getBalanceHidden().observe(getViewLifecycleOwner(), hidden -> {
             animateEyeIconSwap(Boolean.TRUE.equals(hidden));
+            accountCardAdapter.setBalancesHidden(Boolean.TRUE.equals(hidden));
             if (Boolean.TRUE.equals(hidden)) {
                 if (balanceAnimator != null) {
                     balanceAnimator.cancel();

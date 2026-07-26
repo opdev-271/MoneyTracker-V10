@@ -12,6 +12,8 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.moneytracker.app.R;
+import com.moneytracker.app.data.entity.Category;
+import com.moneytracker.app.ui.addtransaction.AddTransactionActivity;
 import com.moneytracker.app.ui.onboarding.OnboardingActivity;
 import com.moneytracker.app.util.LocaleHelper;
 import com.moneytracker.app.util.OnboardingPrefs;
@@ -42,5 +44,8 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigation = findViewById(R.id.bottom_navigation);
         NavigationUI.setupWithNavController(bottomNavigation, navController);
+
+        findViewById(R.id.btn_quick_add).setOnClickListener(v ->
+                startActivity(AddTransactionActivity.newIntent(this, Category.TYPE_EXPENSE, -1L)));
     }
 }

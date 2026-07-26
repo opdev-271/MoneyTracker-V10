@@ -4,6 +4,11 @@
 
     <!-- Home -->
     <string name="home_welcome_back">MoneyTracker</string>
+    <string name="greeting_morning">Guten Morgen,</string>
+    <string name="greeting_afternoon">Guten Tag,</string>
+    <string name="greeting_evening">Guten Abend,</string>
+    <string name="home_my_cards">Meine Karten</string>
+    <string name="home_add_card">+ Hinzufügen</string>
     <string name="account_balance">Kontostand</string>
     <string name="balance_label_single">Kontostand:</string>
     <string name="balance_label_multiple">Kontostand der Konten:</string>
@@ -100,6 +105,8 @@
     <string name="analytics_period_year">Jahr</string>
     <string name="analytics_no_data">Noch keine Ausgaben in diesem Zeitraum</string>
     <string name="analytics_filter_all">Alle</string>
+    <string name="analytics_trend_up">Ausgaben %1$s höher als letzte Periode</string>
+    <string name="analytics_trend_down">Ausgaben %1$s niedriger als letzte Periode</string>
 
     <!-- Settings -->
     <string name="settings_title">Einstellungen</string>

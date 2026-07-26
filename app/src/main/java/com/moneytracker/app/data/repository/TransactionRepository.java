@@ -32,6 +32,11 @@ public class TransactionRepository {
         return transactionDao.getRecentTransactionsForAccounts(accountIds, limit);
     }
 
+    public LiveData<List<TransactionWithDetails>> getTransactionsBetweenForAccounts(
+            List<Long> accountIds, long startMillis, long endMillis) {
+        return transactionDao.getTransactionsBetweenForAccounts(accountIds, startMillis, endMillis);
+    }
+
     public LiveData<Double> getTotalIncomeBetweenForAccounts(List<Long> accountIds, long startMillis, long endMillis) {
         return transactionDao.getTotalIncomeBetweenForAccounts(accountIds, startMillis, endMillis);
     }

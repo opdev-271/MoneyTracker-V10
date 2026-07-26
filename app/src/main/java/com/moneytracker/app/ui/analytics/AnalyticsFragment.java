@@ -15,12 +15,19 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.components.Legend;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.moneytracker.app.R;
 import com.moneytracker.app.data.dao.TransactionDao;
 import com.moneytracker.app.data.entity.Account;
+import com.moneytracker.app.data.entity.Category;
+import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.databinding.FragmentAnalyticsBinding;
 import com.moneytracker.app.ui.widget.ColorSwatchRow;
 import com.moneytracker.app.ui.widget.SegmentedToggle;
@@ -30,14 +37,22 @@ import com.moneytracker.app.util.DisplayNameResolver;
 import com.moneytracker.app.util.SettingsPrefs;
 import com.moneytracker.app.util.ViewAnimations;
 
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class AnalyticsFragment extends Fragment {
 
     private FragmentAnalyticsBinding binding;
     private AnalyticsViewModel viewModel;
     private SegmentedToggle periodToggle;
+
+    private Double currentExpense;
+    private Double previousExpense;
 
     @Nullable
     @Override
@@ -54,6 +69,7 @@ public class AnalyticsFragment extends Fragment {
         ViewAnimations.fadeInContent(view);
 
         setupChart();
+        setupLineChart();
 
         periodToggle = new SegmentedToggle(binding.periodContainer, binding.periodIndicator,
                 new android.widget.TextView[]{binding.periodDay, binding.periodWeek, binding.periodMonth, binding.periodYear},
@@ -64,9 +80,17 @@ public class AnalyticsFragment extends Fragment {
         viewModel.getPeriod().observe(getViewLifecycleOwner(), period -> periodToggle.setSelectedIndex(period.ordinal()));
         viewModel.getTotalIncome().observe(getViewLifecycleOwner(), value ->
                 binding.textTotalIncome.setText(CurrencyFormatter.format(value != null ? value : 0, null)));
-        viewModel.getTotalExpense().observe(getViewLifecycleOwner(), value ->
-                binding.textTotalExpense.setText(CurrencyFormatter.format(value != null ? value : 0, null)));
+        viewModel.getTotalExpense().observe(getViewLifecycleOwner(), value -> {
+            binding.textTotalExpense.setText(CurrencyFormatter.format(value != null ? value : 0, null));
+            currentExpense = value;
+            updateTrendBanner();
+        });
+        viewModel.getPreviousTotalExpense().observe(getViewLifecycleOwner(), value -> {
+            previousExpense = value;
+            updateTrendBanner();
+        });
         viewModel.getCategoryTotals().observe(getViewLifecycleOwner(), this::renderChart);
+        viewModel.getPeriodTransactions().observe(getViewLifecycleOwner(), this::renderLineChart);
 
         viewModel.getAccounts().observe(getViewLifecycleOwner(), accounts -> renderAccountFilter(accounts != null ? accounts : new ArrayList<>()));
         viewModel.getSelectedAccountId().observe(getViewLifecycleOwner(), id -> updateAccountFilterSelection());
@@ -150,6 +174,163 @@ public class AnalyticsFragment extends Fragment {
             chip.setTextColor(requireContext().getColor(R.color.text_primary));
         }
         chip.setBackground(drawable);
+    }
+
+    private void setupLineChart() {
+        binding.lineChart.getDescription().setEnabled(false);
+        binding.lineChart.getLegend().setEnabled(false);
+        binding.lineChart.setTouchEnabled(false);
+        binding.lineChart.getAxisLeft().setEnabled(false);
+        binding.lineChart.getAxisRight().setEnabled(false);
+        binding.lineChart.setExtraBottomOffset(6f);
+        XAxis xAxis = binding.lineChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false);
+        xAxis.setDrawAxisLine(false);
+        xAxis.setTextColor(requireContext().getColor(R.color.text_secondary));
+        xAxis.setTextSize(11f);
+        xAxis.setGranularity(1f);
+    }
+
+    /** Buckets the period's transactions into income/expense series (hours for a day,
+     * days for a week/month, months for a year) and renders the two-line cash-flow chart. */
+    private void renderLineChart(List<TransactionWithDetails> transactions) {
+        AnalyticsViewModel.Period period = viewModel.getPeriod().getValue();
+        long[] range = viewModel.getDateRange().getValue();
+        if (period == null || range == null) {
+            return;
+        }
+        boolean empty = transactions == null || transactions.isEmpty();
+        binding.textChartNoData.setVisibility(empty ? View.VISIBLE : View.GONE);
+        binding.lineChart.setVisibility(empty ? View.INVISIBLE : View.VISIBLE);
+        if (empty) {
+            binding.lineChart.clear();
+            return;
+        }
+
+        int bucketCount;
+        switch (period) {
+            case DAY:
+                bucketCount = 24;
+                break;
+            case WEEK:
+                bucketCount = 7;
+                break;
+            case YEAR:
+                bucketCount = 12;
+                break;
+            case MONTH:
+            default:
+                bucketCount = (int) ((range[1] - range[0]) / 86400000L) + 1;
+                break;
+        }
+
+        float[] income = new float[bucketCount];
+        float[] expense = new float[bucketCount];
+        Calendar calendar = Calendar.getInstance();
+        for (TransactionWithDetails t : transactions) {
+            Date date = t.date;
+            if (date == null) {
+                continue;
+            }
+            int bucket;
+            if (period == AnalyticsViewModel.Period.YEAR) {
+                calendar.setTime(date);
+                bucket = calendar.get(Calendar.MONTH);
+            } else {
+                long unitMillis = period == AnalyticsViewModel.Period.DAY ? 3600000L : 86400000L;
+                bucket = (int) ((date.getTime() - range[0]) / unitMillis);
+            }
+            if (bucket < 0 || bucket >= bucketCount) {
+                continue;
+            }
+            if (Category.TYPE_INCOME.equals(t.type)) {
+                income[bucket] += (float) t.amount;
+            } else {
+                expense[bucket] += (float) t.amount;
+            }
+        }
+
+        List<Entry> incomeEntries = new ArrayList<>();
+        List<Entry> expenseEntries = new ArrayList<>();
+        for (int i = 0; i < bucketCount; i++) {
+            incomeEntries.add(new Entry(i, income[i]));
+            expenseEntries.add(new Entry(i, expense[i]));
+        }
+
+        LineData lineData = new LineData(
+                buildLineDataSet(incomeEntries, requireContext().getColor(R.color.accent_on_surface)),
+                buildLineDataSet(expenseEntries, requireContext().getColor(R.color.accent_coral)));
+
+        XAxis xAxis = binding.lineChart.getXAxis();
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(buildBucketLabels(period, range, bucketCount)));
+        xAxis.setLabelCount(Math.min(bucketCount, period == AnalyticsViewModel.Period.MONTH ? 6 : bucketCount));
+
+        binding.lineChart.setData(lineData);
+        if (SettingsPrefs.isAnimationsEnabled(requireContext())) {
+            binding.lineChart.animateX(700, Easing.EaseOutCirc);
+        }
+        binding.lineChart.invalidate();
+    }
+
+    private LineDataSet buildLineDataSet(List<Entry> entries, int color) {
+        LineDataSet dataSet = new LineDataSet(entries, "");
+        dataSet.setColor(color);
+        dataSet.setLineWidth(2.5f);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        dataSet.setDrawCircles(false);
+        dataSet.setDrawValues(false);
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(color);
+        dataSet.setFillAlpha(40);
+        return dataSet;
+    }
+
+    private String[] buildBucketLabels(AnalyticsViewModel.Period period, long[] range, int bucketCount) {
+        String[] labels = new String[bucketCount];
+        switch (period) {
+            case DAY:
+                for (int i = 0; i < bucketCount; i++) {
+                    labels[i] = i % 6 == 0 ? String.valueOf(i) : "";
+                }
+                break;
+            case WEEK: {
+                SimpleDateFormat dayFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(range[0]);
+                for (int i = 0; i < bucketCount; i++) {
+                    labels[i] = dayFormat.format(calendar.getTime());
+                    calendar.add(Calendar.DAY_OF_YEAR, 1);
+                }
+                break;
+            }
+            case YEAR: {
+                String[] months = new DateFormatSymbols(Locale.getDefault()).getShortMonths();
+                for (int i = 0; i < bucketCount; i++) {
+                    labels[i] = i < months.length ? months[i] : "";
+                }
+                break;
+            }
+            case MONTH:
+            default:
+                for (int i = 0; i < bucketCount; i++) {
+                    labels[i] = String.valueOf(i + 1);
+                }
+                break;
+        }
+        return labels;
+    }
+
+    private void updateTrendBanner() {
+        if (currentExpense == null || previousExpense == null || previousExpense <= 0) {
+            binding.bannerTrend.setVisibility(View.GONE);
+            return;
+        }
+        double percent = (currentExpense - previousExpense) / previousExpense * 100;
+        String formatted = String.format(Locale.getDefault(), "%.1f %%", Math.abs(percent));
+        binding.textTrend.setText(getString(
+                percent >= 0 ? R.string.analytics_trend_up : R.string.analytics_trend_down, formatted));
+        binding.bannerTrend.setVisibility(View.VISIBLE);
     }
 
     private void setupChart() {

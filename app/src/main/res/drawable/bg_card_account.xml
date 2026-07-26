@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Base shape for account "bank cards"; the solid color is replaced at bind
+     time with the account's own color (mutate + setColor). -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <solid android:color="@color/accent" />
+    <corners android:radius="24dp" />
+</shape>

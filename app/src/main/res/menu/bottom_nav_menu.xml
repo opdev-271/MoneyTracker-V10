@@ -8,6 +8,12 @@
         android:id="@+id/walletFragment"
         android:icon="@drawable/ic_nav_wallet"
         android:title="@string/nav_wallet" />
+    <!-- Non-navigable spacer that keeps the middle of the pill free for the
+         floating add-transaction button overlaid in activity_main. -->
+    <item
+        android:id="@+id/nav_placeholder"
+        android:enabled="false"
+        android:title="" />
     <item
         android:id="@+id/analyticsFragment"
         android:icon="@drawable/ic_nav_analytics"

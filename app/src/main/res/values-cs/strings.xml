@@ -4,6 +4,11 @@
 
     <!-- Home -->
     <string name="home_welcome_back">MoneyTracker</string>
+    <string name="greeting_morning">Dobré ráno,</string>
+    <string name="greeting_afternoon">Dobré odpoledne,</string>
+    <string name="greeting_evening">Dobrý večer,</string>
+    <string name="home_my_cards">Moje karty</string>
+    <string name="home_add_card">+ Přidat</string>
     <string name="account_balance">Zůstatek účtu</string>
     <string name="balance_label_single">Zůstatek na účtu:</string>
     <string name="balance_label_multiple">Zůstatek na účtech:</string>
@@ -100,6 +105,8 @@
     <string name="analytics_period_year">Rok</string>
     <string name="analytics_no_data">V tomto období zatím nejsou žádné výdaje</string>
     <string name="analytics_filter_all">Vše</string>
+    <string name="analytics_trend_up">Výdaje o %1$s vyšší než minulé období</string>
+    <string name="analytics_trend_down">Výdaje o %1$s nižší než minulé období</string>
 
     <!-- Settings -->
     <string name="settings_title">Nastavení</string>

@@ -4,11 +4,11 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -50,7 +50,6 @@ public class AccountAdapter extends ListAdapter<AccountWithBalance, AccountAdapt
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        private final FrameLayout badgeColor;
         private final ImageView imageAccountType;
         private final TextView textName;
         private final TextView textCurrency;
@@ -58,7 +57,6 @@ public class AccountAdapter extends ListAdapter<AccountWithBalance, AccountAdapt
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
-            badgeColor = itemView.findViewById(R.id.badge_color);
             imageAccountType = itemView.findViewById(R.id.image_account_type);
             textName = itemView.findViewById(R.id.text_name);
             textCurrency = itemView.findViewById(R.id.text_currency);
@@ -67,15 +65,20 @@ public class AccountAdapter extends ListAdapter<AccountWithBalance, AccountAdapt
         }
 
         void bind(AccountWithBalance item, OnAccountClickListener listener) {
-            textName.setText(DisplayNameResolver.resolve(itemView.getContext(), item.account.getName()));
-            textCurrency.setText(item.account.getCurrencyCode());
-            textBalance.setText(CurrencyFormatter.format(item.balance, item.account.getCurrencyCode()));
-            imageAccountType.setImageResource(AccountIcons.resolve(item.account.getAccountType()));
+            int color = item.account.getColor() != 0 ? item.account.getColor() : ColorSwatchRow.DEFAULT_COLORS[1];
+            GradientDrawable card = (GradientDrawable) itemView.getBackground().mutate();
+            card.setColor(color);
+            int onCard = ContrastColor.forBackground(color);
+            int onCardMuted = ColorUtils.setAlphaComponent(onCard, 170);
 
-            int color = item.account.getColor() != 0 ? item.account.getColor() : ColorSwatchRow.DEFAULT_COLORS[0];
-            GradientDrawable badge = (GradientDrawable) badgeColor.getBackground().mutate();
-            badge.setColor(color);
-            imageAccountType.setColorFilter(ContrastColor.forBackground(color));
+            textName.setText(DisplayNameResolver.resolve(itemView.getContext(), item.account.getName()));
+            textName.setTextColor(onCardMuted);
+            textCurrency.setText(item.account.getCurrencyCode());
+            textCurrency.setTextColor(onCardMuted);
+            textBalance.setText(CurrencyFormatter.format(item.balance, item.account.getCurrencyCode()));
+            textBalance.setTextColor(onCard);
+            imageAccountType.setImageResource(AccountIcons.resolve(item.account.getAccountType()));
+            imageAccountType.setColorFilter(onCard);
 
             itemView.setOnClickListener(v -> listener.onAccountClick(item));
         }
