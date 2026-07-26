@@ -64,7 +64,7 @@
                 android:id="@+id/toggle_container"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
-                android:background="@drawable/bg_row_light"
+                android:background="@drawable/bg_toggle_track"
                 android:padding="4dp">
 
                 <View

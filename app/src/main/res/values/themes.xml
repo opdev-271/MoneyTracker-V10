@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.MoneyTracker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/text_primary</item>
-        <item name="colorPrimaryDark">@color/text_primary</item>
-        <item name="colorAccent">@color/text_primary</item>
-        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorPrimaryDark">@color/background</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnPrimary">@color/on_accent_text</item>
+        <item name="colorOnSecondary">@color/on_accent_text</item>
+        <item name="colorControlActivated">@color/accent</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:statusBarColor" tools:targetApi="l">@color/background</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-        <item name="android:navigationBarColor" tools:targetApi="l">@color/surface</item>
+        <item name="android:navigationBarColor" tools:targetApi="l">@color/background</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
         <item name="actionModeStyle">@style/Widget.MoneyTracker.ActionMode</item>
     </style>
 
-    <!-- colorPrimary/colorPrimaryDark are both text_primary (flips dark/light per theme),
-         so the default contextual action bar (transaction multi-select) would inherit that
-         and its icons could end up the wrong color for the surface they land on. Force a
-         known, already theme-aware background instead, so the icons' own baked-in colors
-         (icon_primary, expense_red - both already correct against @color/surface elsewhere
-         in the app) stay legible in both themes without any runtime icon tinting. -->
+    <!-- The contextual action bar (transaction multi-select) inherits colorPrimary by
+         default, which is now the lime accent - its icons (icon_primary, expense_red)
+         are authored against @color/surface, so force that surface here to keep them
+         legible in both themes without any runtime icon tinting. -->
     <style name="Widget.MoneyTracker.ActionMode" parent="Widget.AppCompat.ActionMode">
         <item name="background">@color/surface</item>
         <item name="titleTextStyle">@style/TextAppearance.MoneyTracker.ActionMode.Title</item>

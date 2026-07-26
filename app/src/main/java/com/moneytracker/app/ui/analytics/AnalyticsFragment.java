@@ -158,10 +158,13 @@ public class AnalyticsFragment extends Fragment {
         binding.pieChart.setDrawHoleEnabled(true);
         binding.pieChart.setHoleRadius(58f);
         binding.pieChart.setTransparentCircleRadius(62f);
-        binding.pieChart.setHoleColor(android.graphics.Color.WHITE);
-        binding.pieChart.setEntryLabelColor(android.graphics.Color.WHITE);
+        binding.pieChart.setHoleColor(requireContext().getColor(R.color.surface));
+        binding.pieChart.setTransparentCircleColor(requireContext().getColor(R.color.surface));
+        // The new palette is pastel-leaning, so dark slice labels read better than white.
+        binding.pieChart.setEntryLabelColor(requireContext().getColor(R.color.on_accent_text));
         binding.pieChart.setEntryLabelTextSize(11f);
         Legend legend = binding.pieChart.getLegend();
+        legend.setTextColor(requireContext().getColor(R.color.text_primary));
         legend.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         legend.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         legend.setOrientation(Legend.LegendOrientation.HORIZONTAL);
@@ -186,7 +189,11 @@ public class AnalyticsFragment extends Fragment {
 
         PieDataSet dataSet = new PieDataSet(entries, "");
         dataSet.setColors(colors);
-        dataSet.setValueTextColor(android.graphics.Color.WHITE);
+        List<Integer> valueColors = new ArrayList<>();
+        for (Integer color : colors) {
+            valueColors.add(ContrastColor.forBackground(color));
+        }
+        dataSet.setValueTextColors(valueColors);
         dataSet.setValueTextSize(12f);
         dataSet.setSliceSpace(2f);
 

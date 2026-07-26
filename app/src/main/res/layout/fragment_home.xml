@@ -42,12 +42,12 @@
                 android:src="@drawable/ic_pfp_cat" />
         </LinearLayout>
 
-        <!-- Balance card (frosted-glass style) -->
+        <!-- Balance card (signature lime card of the design) -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/spacing_l"
-            android:background="@drawable/bg_card_glass"
+            android:background="@drawable/bg_card_accent"
             android:elevation="3dp"
             android:padding="24dp">
 
@@ -61,20 +61,22 @@
                     android:id="@+id/btn_toggle_balance"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
-                    android:background="@drawable/bg_circle_light"
+                    android:background="@drawable/bg_circle_on_accent"
                     android:contentDescription="@null"
                     android:padding="8dp"
-                    android:src="@drawable/ic_eye" />
+                    android:src="@drawable/ic_eye"
+                    android:tint="@color/on_accent_text" />
 
                 <ImageButton
                     android:id="@+id/btn_balance_accounts"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:layout_marginTop="8dp"
-                    android:background="@drawable/bg_circle_light"
+                    android:background="@drawable/bg_circle_on_accent"
                     android:contentDescription="@string/balance_accounts_picker_title"
                     android:padding="9dp"
-                    android:src="@drawable/ic_gear" />
+                    android:src="@drawable/ic_gear"
+                    android:tint="@color/on_accent_text" />
             </LinearLayout>
 
             <LinearLayout
@@ -91,7 +93,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/account_balance"
-                    android:textColor="@color/text_secondary"
+                    android:textColor="@color/on_accent_muted"
                     android:textSize="14sp" />
 
                 <TextView
@@ -99,8 +101,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="@color/text_primary"
-                    android:textSize="32sp"
+                    android:textColor="@color/on_accent_text"
+                    android:textSize="34sp"
                     android:textStyle="bold"
                     tools:text="$34,567.90"
                     xmlns:tools="http://schemas.android.com/tools" />
@@ -117,14 +119,15 @@
                         android:layout_width="16dp"
                         android:layout_height="16dp"
                         android:contentDescription="@null"
-                        android:src="@drawable/ic_wallet_card" />
+                        android:src="@drawable/ic_wallet_card"
+                        android:tint="@color/on_accent_muted" />
 
                     <TextView
                         android:id="@+id/text_account_info"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="6dp"
-                        android:textColor="@color/text_secondary"
+                        android:textColor="@color/on_accent_muted"
                         android:textSize="13sp"
                         tools:text="Cash"
                         xmlns:tools="http://schemas.android.com/tools" />
@@ -164,7 +167,8 @@
                         android:layout_height="@dimen/circle_button_icon_size"
                         android:layout_gravity="center"
                         android:contentDescription="@null"
-                        android:src="@drawable/ic_arrow_up" />
+                        android:src="@drawable/ic_arrow_up"
+                        android:tint="@color/expense_red" />
                 </FrameLayout>
 
                 <TextView
@@ -198,7 +202,8 @@
                         android:layout_height="@dimen/circle_button_icon_size"
                         android:layout_gravity="center"
                         android:contentDescription="@null"
-                        android:src="@drawable/ic_arrow_down" />
+                        android:src="@drawable/ic_arrow_down"
+                        android:tint="@color/accent_on_surface" />
                 </FrameLayout>
 
                 <TextView

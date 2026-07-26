@@ -75,17 +75,17 @@ public abstract class AppDatabase extends RoomDatabase {
     };
 
     private static void seedCategories(CategoryDao dao) {
-        Category food = newCategory("category_food", Category.TYPE_EXPENSE, "ic_cat_food", 0xFFF2994A);
-        Category transport = newCategory("category_transport", Category.TYPE_EXPENSE, "ic_cat_transport", 0xFF2F80ED);
-        Category shopping = newCategory("category_shopping", Category.TYPE_EXPENSE, "ic_cat_shopping", 0xFFBB6BD9);
-        Category bills = newCategory("category_bills", Category.TYPE_EXPENSE, "ic_cat_bills", 0xFFEB5757);
-        Category entertainment = newCategory("category_entertainment", Category.TYPE_EXPENSE, "ic_cat_entertainment", 0xFF9B51E0);
-        Category health = newCategory("category_health", Category.TYPE_EXPENSE, "ic_cat_health", 0xFF27AE60);
-        Category otherExpense = newCategory("category_other_expense", Category.TYPE_EXPENSE, "ic_cat_other", 0xFF828282);
+        Category food = newCategory("category_food", Category.TYPE_EXPENSE, "ic_cat_food", 0xFFF2907B);
+        Category transport = newCategory("category_transport", Category.TYPE_EXPENSE, "ic_cat_transport", 0xFF8EC9F0);
+        Category shopping = newCategory("category_shopping", Category.TYPE_EXPENSE, "ic_cat_shopping", 0xFFB9B3F4);
+        Category bills = newCategory("category_bills", Category.TYPE_EXPENSE, "ic_cat_bills", 0xFFE2674A);
+        Category entertainment = newCategory("category_entertainment", Category.TYPE_EXPENSE, "ic_cat_entertainment", 0xFF9B8CE8);
+        Category health = newCategory("category_health", Category.TYPE_EXPENSE, "ic_cat_health", 0xFF7ED9A7);
+        Category otherExpense = newCategory("category_other_expense", Category.TYPE_EXPENSE, "ic_cat_other", 0xFF9AA091);
 
-        Category salary = newCategory("category_salary", Category.TYPE_INCOME, "ic_cat_salary", 0xFF219653);
+        Category salary = newCategory("category_salary", Category.TYPE_INCOME, "ic_cat_salary", 0xFFA9C93F);
         Category gift = newCategory("category_gift", Category.TYPE_INCOME, "ic_cat_gift", 0xFFF2C94C);
-        Category otherIncome = newCategory("category_other_income", Category.TYPE_INCOME, "ic_cat_other", 0xFF56CCF2);
+        Category otherIncome = newCategory("category_other_income", Category.TYPE_INCOME, "ic_cat_other", 0xFF8EC9F0);
 
         dao.insertAll(Arrays.asList(
                 food, transport, shopping, bills, entertainment, health, otherExpense,

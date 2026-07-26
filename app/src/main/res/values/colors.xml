@@ -1,33 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#E9EAEE</color>
+    <color name="background">#EEF0E8</color>
     <color name="surface">#FFFFFFFF</color>
-    <color name="surface_variant">#F0F1F4</color>
-    <color name="surface_variant_dark">#E3E4E8</color>
+    <color name="surface_variant">#F0F2E9</color>
+    <color name="surface_variant_dark">#E2E5D8</color>
 
     <!-- Frosted-glass approximation (no real-time blur at minSdk 24): a translucent
-         surface fill plus a light rim to catch the eye, used only on the two most
-         prominent "floating" surfaces (bottom nav pill, Home balance card). -->
-    <color name="surface_glass">#E6FFFFFF</color>
+         surface fill plus a light rim to catch the eye, used only on the most
+         prominent "floating" surface (bottom nav pill). -->
+    <color name="surface_glass">#F2FFFFFF</color>
     <color name="glass_edge">#40FFFFFF</color>
 
-    <color name="text_primary">#1A1A1A</color>
-    <color name="text_secondary">#8A8A8E</color>
-    <color name="text_tertiary">#B5B5BA</color>
+    <color name="text_primary">#181A12</color>
+    <color name="text_secondary">#7C8074</color>
+    <color name="text_tertiary">#AEB2A4</color>
 
-    <color name="icon_primary">#1A1A1A</color>
-    <color name="on_surface_variant">#1A1A1A</color>
+    <color name="icon_primary">#181A12</color>
+    <color name="on_surface_variant">#181A12</color>
 
-    <color name="income_green">#219653</color>
-    <color name="expense_red">#EB5757</color>
+    <!-- Lime works as a fill in both themes, but as *text* on a light background
+         it washes out, so the light theme's income color is a darker olive-lime. -->
+    <color name="income_green">#7A9C18</color>
+    <color name="expense_red">#E2674A</color>
 
-    <color name="accent">#1A1A1A</color>
+    <!-- Signature lime accent of the design; fills chips, the balance card,
+         primary buttons and the selected nav item. -->
+    <color name="accent">#D9F55F</color>
+    <!-- Accent variant with enough contrast to act as text/icon color on
+         surface/background (the raw lime is too light for that in light theme). -->
+    <color name="accent_on_surface">#7A9C18</color>
+    <color name="accent_lavender">#B9B3F4</color>
+    <color name="accent_coral">#F2907B</color>
+
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
-    <color name="divider">#EDEDF0</color>
+    <color name="divider">#E4E7DA</color>
 
-    <!-- Text color to use on top of an accent-filled surface (e.g. the selected
-         segmented-toggle pill, which is filled with text_primary and therefore
-         flips between themes) -->
-    <color name="on_accent_text">#FFFFFFFF</color>
+    <!-- Text/icons sitting on an accent(lime)-filled surface. The lime is light
+         in both themes, so these stay dark and do NOT flip. -->
+    <color name="on_accent_text">#181A12</color>
+    <color name="on_accent_muted">#99181A12</color>
+    <!-- Translucent dark fill for small circular buttons on the lime card. -->
+    <color name="on_accent_container">#1F181A12</color>
 </resources>

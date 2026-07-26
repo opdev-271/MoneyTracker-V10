@@ -1,29 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="background">#121214</color>
-    <color name="surface">#1E1E22</color>
-    <color name="surface_variant">#2A2A2E</color>
-    <color name="surface_variant_dark">#34343A</color>
+    <color name="background">#141613</color>
+    <color name="surface">#1F221D</color>
+    <color name="surface_variant">#2B2E27</color>
+    <color name="surface_variant_dark">#363A32</color>
 
-    <color name="surface_glass">#CC1E1E22</color>
-    <color name="glass_edge">#40FFFFFF</color>
+    <color name="surface_glass">#F01F221D</color>
+    <color name="glass_edge">#2EFFFFFF</color>
 
-    <color name="text_primary">#F2F2F2</color>
-    <color name="text_secondary">#9A9AA0</color>
-    <color name="text_tertiary">#6E6E74</color>
+    <color name="text_primary">#F4F6EE</color>
+    <color name="text_secondary">#A4A99A</color>
+    <color name="text_tertiary">#6F746A</color>
 
-    <color name="icon_primary">#F2F2F2</color>
-    <color name="on_surface_variant">#F2F2F2</color>
+    <color name="icon_primary">#F4F6EE</color>
+    <color name="on_surface_variant">#F4F6EE</color>
 
-    <color name="income_green">#3DDC84</color>
-    <color name="expense_red">#FF6B6B</color>
+    <!-- On the dark background the lime itself is the income color,
+         and the coral accent doubles as the expense color. -->
+    <color name="income_green">#D9F55F</color>
+    <color name="expense_red">#F2907B</color>
 
-    <color name="accent">#F2F2F2</color>
+    <color name="accent">#D9F55F</color>
+    <color name="accent_on_surface">#D9F55F</color>
+    <color name="accent_lavender">#B9B3F4</color>
+    <color name="accent_coral">#F2907B</color>
+
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
-    <color name="divider">#2E2E33</color>
+    <color name="divider">#2C2F28</color>
 
-    <!-- text_primary flips to near-white in dark mode, so the selected pill
-         (filled with text_primary) needs a dark label to stay readable -->
-    <color name="on_accent_text">#1A1A1A</color>
+    <!-- Lime stays light in dark mode too, so on-accent content stays dark. -->
+    <color name="on_accent_text">#181A12</color>
+    <color name="on_accent_muted">#99181A12</color>
+    <color name="on_accent_container">#1F181A12</color>
 </resources>

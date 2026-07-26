@@ -16,7 +16,7 @@ import com.moneytracker.app.R;
 public class ColorSwatchRow {
 
     public static final int[] DEFAULT_COLORS = {
-            0xFF1A1A1A, 0xFF2F80ED, 0xFF9B51E0, 0xFFF2994A, 0xFF219653, 0xFFEB5757, 0xFF2D9CDB
+            0xFF181A12, 0xFFD9F55F, 0xFFB9B3F4, 0xFFF2907B, 0xFF8EC9F0, 0xFFF2C94C, 0xFF7ED9A7
     };
 
     private final Context context;
