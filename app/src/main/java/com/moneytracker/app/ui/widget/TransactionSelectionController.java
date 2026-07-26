@@ -1,13 +1,10 @@
 package com.moneytracker.app.ui.widget;
 
-import android.graphics.drawable.Drawable;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.view.ActionMode;
-import androidx.core.content.ContextCompat;
-import androidx.core.graphics.drawable.DrawableCompat;
 
 import com.moneytracker.app.R;
 import com.moneytracker.app.data.entity.Transaction;
@@ -81,7 +78,6 @@ public class TransactionSelectionController {
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.menu_transaction_selection, menu);
-            tintMenuIcons(menu);
             return true;
         }
 
@@ -121,25 +117,6 @@ public class TransactionSelectionController {
             host.onSelectionChanged(new HashSet<>());
         }
     };
-
-    /**
-     * This theme's colorPrimary/colorPrimaryDark are both text_primary (flips dark/light
-     * per theme), so the default ActionMode bar background does too - tint icons with
-     * on_accent_text (built for exactly that surface) instead of trusting whatever color
-     * each icon happens to be drawn with, or they can disappear against the bar.
-     */
-    private void tintMenuIcons(Menu menu) {
-        int tint = ContextCompat.getColor(activity, R.color.on_accent_text);
-        for (int i = 0; i < menu.size(); i++) {
-            MenuItem item = menu.getItem(i);
-            Drawable icon = item.getIcon();
-            if (icon != null) {
-                icon = icon.mutate();
-                DrawableCompat.setTint(icon, tint);
-                item.setIcon(icon);
-            }
-        }
-    }
 
     private void deleteSelected() {
         for (Long id : selectedIds) {

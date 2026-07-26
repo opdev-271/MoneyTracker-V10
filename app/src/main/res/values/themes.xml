@@ -10,5 +10,21 @@
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
         <item name="android:navigationBarColor" tools:targetApi="l">@color/surface</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">true</item>
+        <item name="actionModeStyle">@style/Widget.MoneyTracker.ActionMode</item>
+    </style>
+
+    <!-- colorPrimary/colorPrimaryDark are both text_primary (flips dark/light per theme),
+         so the default contextual action bar (transaction multi-select) would inherit that
+         and its icons could end up the wrong color for the surface they land on. Force a
+         known, already theme-aware background instead, so the icons' own baked-in colors
+         (icon_primary, expense_red - both already correct against @color/surface elsewhere
+         in the app) stay legible in both themes without any runtime icon tinting. -->
+    <style name="Widget.MoneyTracker.ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="background">@color/surface</item>
+        <item name="titleTextStyle">@style/TextAppearance.MoneyTracker.ActionMode.Title</item>
+    </style>
+
+    <style name="TextAppearance.MoneyTracker.ActionMode.Title" parent="TextAppearance.AppCompat.Widget.ActionMode.Title">
+        <item name="android:textColor">@color/text_primary</item>
     </style>
 </resources>
