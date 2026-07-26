@@ -28,6 +28,7 @@ import com.moneytracker.app.ui.widget.OnTransactionInteractionListener;
 import com.moneytracker.app.ui.widget.TransactionSelectionController;
 import com.moneytracker.app.util.CurrencyFormatter;
 import com.moneytracker.app.util.DisplayNameResolver;
+import com.moneytracker.app.util.OnboardingPrefs;
 import com.moneytracker.app.util.ProfileIcons;
 import com.moneytracker.app.util.SettingsPrefs;
 import com.moneytracker.app.util.ViewAnimations;
@@ -189,21 +190,27 @@ public class HomeFragment extends Fragment {
         binding.textAccountInfo.setText(TextUtils.join(", ", names));
     }
 
+    /** A single selected account shows in its own currency, unconverted; 2+ (including
+     * "all") show in the preferred currency, since that's what the sum was converted into. */
+    private String resolveBalanceCurrency() {
+        List<Long> resolvedIds = viewModel.getResolvedAccountIds().getValue();
+        List<Account> accounts = viewModel.getAccounts().getValue();
+        if (resolvedIds != null && resolvedIds.size() == 1 && accounts != null) {
+            long onlyId = resolvedIds.get(0);
+            for (Account account : accounts) {
+                if (account.getId() == onlyId) {
+                    return account.getCurrencyCode();
+                }
+            }
+        }
+        return OnboardingPrefs.getPreferredCurrency(requireContext());
+    }
+
     private void animateBalanceTo(Double balance) {
         if (balance == null || binding == null) {
             return;
         }
-        String currency = "CZK";
-        List<Account> accounts = viewModel.getAccounts().getValue();
-        Set<Long> selection = viewModel.getSelectedAccountIds().getValue();
-        if (accounts != null) {
-            for (Account account : accounts) {
-                if (selection == null || selection.contains(account.getId())) {
-                    currency = account.getCurrencyCode();
-                    break;
-                }
-            }
-        }
+        String currency = resolveBalanceCurrency();
 
         double from = Double.isNaN(displayedBalance) ? 0 : displayedBalance;
         displayedBalance = balance;

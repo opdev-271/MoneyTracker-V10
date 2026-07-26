@@ -47,11 +47,6 @@ public interface AccountDao {
             "FROM accounts a WHERE a.id = :accountId")
     LiveData<Double> getAccountBalance(long accountId);
 
-    @Query("SELECT IFNULL(SUM(a.initial_balance + IFNULL((SELECT SUM(CASE WHEN t.type = 'EXPENSE' THEN -t.amount ELSE t.amount END) " +
-            "FROM transactions t WHERE t.account_id = a.id), 0)), 0) " +
-            "FROM accounts a WHERE a.id IN (:accountIds)")
-    LiveData<Double> getBalanceForAccounts(List<Long> accountIds);
-
     @Query("SELECT a.*, (a.initial_balance + IFNULL((SELECT SUM(CASE WHEN t.type = 'EXPENSE' THEN -t.amount ELSE t.amount END) " +
             "FROM transactions t WHERE t.account_id = a.id), 0)) AS balance " +
             "FROM accounts a WHERE a.profile_id = :profileId ORDER BY a.sort_order ASC, a.id ASC")

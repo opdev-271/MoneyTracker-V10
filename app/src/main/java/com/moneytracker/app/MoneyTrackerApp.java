@@ -9,8 +9,13 @@ import com.moneytracker.app.data.repository.CategoryRepository;
 import com.moneytracker.app.data.repository.ProfileRepository;
 import com.moneytracker.app.data.repository.TransactionRepository;
 import com.moneytracker.app.util.AppExecutors;
+import com.moneytracker.app.util.ExchangeRateFetcher;
+import com.moneytracker.app.util.ExchangeRatePrefs;
 import com.moneytracker.app.util.LocaleHelper;
 import com.moneytracker.app.util.ThemePrefs;
+
+import java.io.IOException;
+import java.util.Map;
 
 /** Holds app-wide singletons (DB + repositories) so every ViewModel can reach them cheaply. */
 public class MoneyTrackerApp extends Application {
@@ -35,6 +40,19 @@ public class MoneyTrackerApp extends Application {
         categoryRepository = new CategoryRepository(database, executors);
         transactionRepository = new TransactionRepository(database, executors);
         profileRepository = new ProfileRepository(database, executors);
+
+        executors.diskIO().execute(this::refreshExchangeRates);
+    }
+
+    /** Best-effort: on success, caches fresh rates; on any failure (no network, etc.) just
+     * silently keeps whatever was cached (or the built-in fallback) - no error UI, not asked for. */
+    private void refreshExchangeRates() {
+        try {
+            Map<String, Double> rates = ExchangeRateFetcher.fetchRatesRelativeToEur();
+            ExchangeRatePrefs.setRates(this, rates);
+        } catch (IOException ignored) {
+            // No network or the feed didn't parse - keep last cached/fallback rates.
+        }
     }
 
     public AccountRepository getAccountRepository() {

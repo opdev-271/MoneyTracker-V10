@@ -12,10 +12,14 @@ import androidx.lifecycle.Transformations;
 import com.moneytracker.app.MoneyTrackerApp;
 import com.moneytracker.app.data.entity.Account;
 import com.moneytracker.app.data.entity.Profile;
+import com.moneytracker.app.data.relation.AccountWithBalance;
 import com.moneytracker.app.data.relation.TransactionWithDetails;
 import com.moneytracker.app.data.repository.AccountRepository;
 import com.moneytracker.app.data.repository.ProfileRepository;
 import com.moneytracker.app.data.repository.TransactionRepository;
+import com.moneytracker.app.util.CurrencyConverter;
+import com.moneytracker.app.util.ExchangeRatePrefs;
+import com.moneytracker.app.util.OnboardingPrefs;
 import com.moneytracker.app.util.SettingsPrefs;
 
 import java.util.ArrayList;
@@ -38,7 +42,8 @@ public class HomeViewModel extends AndroidViewModel {
     private final MutableLiveData<Set<Long>> selectedAccountIds;
     private final MediatorLiveData<List<Long>> resolvedAccountIds = new MediatorLiveData<>();
 
-    private final LiveData<Double> balance;
+    private final LiveData<List<AccountWithBalance>> accountsWithBalance;
+    private final MediatorLiveData<Double> balance = new MediatorLiveData<>();
     private final LiveData<List<TransactionWithDetails>> recentTransactions;
     private final MutableLiveData<Boolean> balanceHidden;
 
@@ -60,8 +65,11 @@ public class HomeViewModel extends AndroidViewModel {
         resolvedAccountIds.addSource(accounts, list -> recomputeResolvedIds());
         resolvedAccountIds.addSource(selectedAccountIds, ids -> recomputeResolvedIds());
 
-        balance = Transformations.switchMap(resolvedAccountIds, ids ->
-                (ids == null || ids.isEmpty()) ? new MutableLiveData<>(0d) : accountRepository.getBalanceForAccounts(ids));
+        accountsWithBalance = Transformations.switchMap(activeProfileId, accountRepository::getAccountsWithBalanceForProfile);
+        balance.addSource(accountsWithBalance, list -> recomputeBalance());
+        balance.addSource(resolvedAccountIds, ids -> recomputeBalance());
+        balance.addSource(ExchangeRatePrefs.ratesUpdatedSignal, tick -> recomputeBalance());
+
         recentTransactions = Transformations.switchMap(resolvedAccountIds, ids ->
                 (ids == null || ids.isEmpty()) ? new MutableLiveData<>(new ArrayList<>())
                         : transactionRepository.getRecentTransactionsForAccounts(ids, RECENT_TRANSACTIONS_LIMIT));
@@ -82,6 +90,25 @@ public class HomeViewModel extends AndroidViewModel {
             }
         }
         resolvedAccountIds.setValue(result);
+    }
+
+    /** Converts each selected account's own balance to the preferred currency before
+     * summing, instead of adding raw numbers across potentially different currencies. */
+    private void recomputeBalance() {
+        List<AccountWithBalance> list = accountsWithBalance.getValue();
+        List<Long> ids = resolvedAccountIds.getValue();
+        if (list == null || ids == null) {
+            return;
+        }
+        String baseCurrency = OnboardingPrefs.getPreferredCurrency(getApplication());
+        double sum = 0;
+        for (AccountWithBalance item : list) {
+            if (ids.contains(item.account.getId())) {
+                sum += CurrencyConverter.convert(getApplication(), item.balance,
+                        item.account.getCurrencyCode(), baseCurrency);
+            }
+        }
+        balance.setValue(sum);
     }
 
     public LiveData<Profile> getActiveProfile() {

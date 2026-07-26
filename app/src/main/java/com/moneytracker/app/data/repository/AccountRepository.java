@@ -33,10 +33,6 @@ public class AccountRepository {
         return accountDao.getAccountsByIdsSync(accountIds);
     }
 
-    public LiveData<Double> getBalanceForAccounts(List<Long> accountIds) {
-        return accountDao.getBalanceForAccounts(accountIds);
-    }
-
     public LiveData<List<AccountWithBalance>> getAccountsWithBalanceForProfile(long profileId) {
         return accountDao.getAccountsWithBalanceForProfile(profileId);
     }
